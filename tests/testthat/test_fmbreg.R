@@ -11,7 +11,7 @@ data_frame <- dplyr::data_frame
 
 test_that("f gives right answers in a simple case", {
   n <- 1000L
-  set.seed(20151128)
+  set.seed(123)
   x <- rnorm(n)
   y1 <- x + rnorm(n)
   y2 <- x + rnorm(n)
@@ -31,11 +31,12 @@ test_that("f gives right answers in a simple case", {
   expect_true(abs(res$t_stat[["const"]]) < 2.0)  
 })
 
-test_that("f gives right answers in a more complicated simple case", {
+test_that("f gives right answers in a more complicated,
+           but still simple case", {
   n <- 1000L
   T <- 100L
   
-  set.seed(20151128)
+  set.seed(123)
   x <- rnorm(n)
   z <- rnorm(n)
 
@@ -76,7 +77,7 @@ test_that("f gives right answers in a more complicated simple case", {
 
 test_that("f gives a warning if the cross-section is less than 100 obs", {
   n <- 99L
-  set.seed(20151128)
+  set.seed(123)
   x <- rnorm(n)
   y1 <- x + rnorm(n)
   y2 <- x + rnorm(n)
