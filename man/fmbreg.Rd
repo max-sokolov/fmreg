@@ -4,7 +4,7 @@
 \alias{fmbreg}
 \title{Fama-MacBeth regression.}
 \usage{
-fmbreg(.data, y, X, date_var, is_const = TRUE)
+fmbreg(.data, y, X, date_var, intercept = TRUE)
 }
 \arguments{
 \item{.data}{Data frame with the data}
@@ -18,7 +18,10 @@ fmbreg(.data, y, X, date_var, is_const = TRUE)
 \item{date_var}{Name of the date variable
 (should be a colname in .data)}
 
-\item{is_const}{Logical: Do we need to include a constant in the regression?}
+\item{intercept}{Logical/Double: If FALSE, no intercept.
+If TRUE, intercept.
+If number, the column of this number is included
+           instead of column of ones.}
 }
 \value{
 A list: $est      - vector of estimates of the coefficients;

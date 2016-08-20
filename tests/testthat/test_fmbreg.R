@@ -24,11 +24,11 @@ test_that("f gives right answers in a simple case", {
 
   expect_true(all(c("est", "t_stat", "full_est") %in% names(res)))
 
-  expect_true(all.equal(res$est[["x"]],     1, tolerance = 0.1))
-  expect_true(all.equal(res$est[["const"]], 0, tolerance = 0.1))
+  expect_true(all.equal(res$est[["x"]],           1, tolerance = 0.1))
+  expect_true(all.equal(res$est[["(Intercept)"]], 0, tolerance = 0.1))
 
   expect_true(abs(res$t_stat[["x"]]) > 2.0)
-  expect_true(abs(res$t_stat[["const"]]) < 2.0)  
+  expect_true(abs(res$t_stat[["(Intercept)"]]) < 2.0)  
 })
 
 test_that("f gives right answers in a more complicated,
@@ -60,19 +60,19 @@ test_that("f gives right answers in a more complicated,
 
   res <- f(df_data, y = "y", X = c("x", "z"), date_var = "date")
 
-  expect_identical(names(res$est),    c("const", c("x", "z")))
-  expect_identical(names(res$t_stat), c("const", c("x", "z")))
-  expect_identical(colnames(res$full_est), c("date", "R2", "const", c("x", "z")))
+  expect_identical(names(res$est),    c("(Intercept)", c("x", "z")))
+  expect_identical(names(res$t_stat), c("(Intercept)", c("x", "z")))
+  expect_identical(colnames(res$full_est), c("date", "R2", "(Intercept)", c("x", "z")))
 
   expect_true(nrow(res$full_est) == T)
 
-  expect_true(all.equal(res$est[["x"]],     1, tolerance = 0.1))
-  expect_true(all.equal(res$est[["z"]],    -1, tolerance = 0.1))
-  expect_true(all.equal(res$est[["const"]], 0, tolerance = 0.1))
+  expect_true(all.equal(res$est[["x"]],           1, tolerance = 0.1))
+  expect_true(all.equal(res$est[["z"]],          -1, tolerance = 0.1))
+  expect_true(all.equal(res$est[["(Intercept)"]], 0, tolerance = 0.1))
 
   expect_true(abs(res$t_stat[["x"]]) > 2.0)
   expect_true(abs(res$t_stat[["z"]]) > 2.0)
-  expect_true(abs(res$t_stat[["const"]]) < 2.0)  
+  expect_true(abs(res$t_stat[["(Intercept)"]]) < 2.0)
 })
 
 test_that("f gives a warning if the cross-section is less than 100 obs", {

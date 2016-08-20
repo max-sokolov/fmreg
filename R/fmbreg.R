@@ -6,14 +6,17 @@
 #'
 #' Estimates Fama-MacBeth regression.
 #'
-#' @param .data    Data frame with the data
-#' @param y        Name of the dependent variable
-#'                 (should be a colname in .data)
-#' @param X        Names of the regressors
-#'                 (should be colnames in .data)
-#' @param date_var Name of the date variable
-#'                 (should be a colname in .data)
-#' @param is_const Logical: Do we need to include a constant in the regression?
+#' @param .data     Data frame with the data
+#' @param y         Name of the dependent variable
+#'                  (should be a colname in .data)
+#' @param X         Names of the regressors
+#'                  (should be colnames in .data)
+#' @param date_var  Name of the date variable
+#'                  (should be a colname in .data)
+#' @param intercept Logical/Double: If FALSE, no intercept.
+#'                                  If TRUE, intercept.
+#'                                  If number, the column of this number is included
+#'                                             instead of column of ones.
 #'
 #' @return A list: $est      - vector of estimates of the coefficients;
 #'                 $t_stat   - vector of the t-stats for the coefficients;
@@ -21,13 +24,14 @@
 #'                             for every period.
 
 #' @export
-fmbreg <- function(.data, y, X, date_var, is_const = TRUE){
+fmbreg <- function(.data, y, X, date_var, intercept = TRUE){
   # check arguments
   stopifnot(AreCharacters(y, X, date_var))
   stopifnot(AreInColnames(.data, y, X, date_var))
 
   stopifnot(length(y) == 1)
   stopifnot(length(date_var) == 1)
+  stopifnot(length(intercept) == 1)
 
   # make unique dates
   v_dates <- sort(unique(.data[[date_var]]))
@@ -48,8 +52,9 @@ fmbreg <- function(.data, y, X, date_var, is_const = TRUE){
     }
 
     m_X <- as.matrix(df_tmp[X])
-    if (is_const == TRUE){
-      m_X <- cbind(const = c(1), m_X)
+    if ((intercept != FALSE) && (intercept != 0)){
+      m_X <- cbind(`(Intercept)` = rep(as.double(intercept), times = nrow(m_X)),
+                   m_X)
     }
 
     tmp_obj <- stats::lm.fit(x = m_X, y = df_tmp[[y]])
