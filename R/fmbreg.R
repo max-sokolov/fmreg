@@ -54,20 +54,20 @@ fmbreg <- function(.data, y, X, date_var, intercept = TRUE){
 
     m_X <- as.matrix(df_tmp[X])
     if ((intercept != FALSE) && (intercept != 0)){
-      m_X <- cbind(`(Intercept)` = rep(as.double(intercept), times = nrow(m_X)),
+      m_X <- cbind(`(Intercept)` = as.double(intercept),
                    m_X)
     }
 
     tmp_obj <- stats::lm.fit(x = m_X, y = df_tmp[[y]])
     
-    l_res[[i]] <- list(coefs = tmp_obj$coefficients,
-                       R2 = R2FromLmFit(tmp_obj))
+    l_res[[i]] <- list(coefs     = tmp_obj$coefficients,
+                       r.squared = R2FromLmFit(tmp_obj))
   }
 
   # extract R^2
   v_from_ll <- portfs::v_from_ll
   
-  v_R2 <- v_from_ll(l_res, key = "R2")
+  v_r_squared <- v_from_ll(l_res, key = "r.squared")
 
   # extract coefs
   fGet <- function(l_elem){
@@ -78,11 +78,13 @@ fmbreg <- function(.data, y, X, date_var, intercept = TRUE){
   stopifnot(nrow(m_coefs) == n_dates)
   stopifnot(all(X %in% colnames(m_coefs)))
 
-  stopifnot(names(v_R2) == as.character(v_dates))
-  stopifnot(rownames(m_coefs) == as.character(v_dates))
+  stopifnot(names(v_r_squared) == as.character(v_dates))
+  stopifnot(rownames(m_coefs)  == as.character(v_dates))
 
   # make data frame with cross sectional estimates
-  df_full_est <- data.frame(date = v_dates, R2 = v_R2)
+  df_full_est <- data.frame(date = v_dates,
+                            r.squared = v_r_squared)
+  
   colnames(df_full_est)[1] <- date_var
   df_full_est <- cbind(df_full_est, m_coefs)
 

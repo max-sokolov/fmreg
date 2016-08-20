@@ -62,7 +62,7 @@ test_that("f gives right answers in a more complicated,
 
   expect_identical(names(res$est),    c("(Intercept)", c("x", "z")))
   expect_identical(names(res$t_stat), c("(Intercept)", c("x", "z")))
-  expect_identical(colnames(res$full_est), c("date", "R2", "(Intercept)", c("x", "z")))
+  expect_identical(colnames(res$full_est), c("date", "r.squared", "(Intercept)", c("x", "z")))
 
   expect_true(nrow(res$full_est) == T)
 
