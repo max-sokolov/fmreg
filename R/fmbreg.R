@@ -60,8 +60,8 @@ fmbreg <- function(.data, y, X, date_var, intercept = TRUE){
 
     tmp_obj <- stats::lm.fit(x = m_X, y = df_tmp[[y]])
     
-    l_res[[i]] <- list(coefs     = tmp_obj$coefficients,
-                       r.squared = R2FromLmFit(tmp_obj))
+    l_res[[i]] <- list(coefficients = tmp_obj$coefficients,
+                       r.squared    = R2FromLmFit(tmp_obj))
   }
 
   # extract R^2
@@ -71,9 +71,13 @@ fmbreg <- function(.data, y, X, date_var, intercept = TRUE){
 
   # extract coefs
   fGet <- function(l_elem){
-    l_elem[["coefs"]]
+    l_elem[["coefficients"]]
   }
-  m_coefs <- t(vapply(l_res, FUN = fGet, FUN.VALUE = l_res[[1]][["coefs"]]))
+
+  m_coefs <- t(vapply(l_res,
+                      FUN = fGet,
+                      FUN.VALUE = double(ncol(m_X)))
+              )
 
   stopifnot(nrow(m_coefs) == n_dates)
   stopifnot(all(X %in% colnames(m_coefs)))
@@ -84,7 +88,7 @@ fmbreg <- function(.data, y, X, date_var, intercept = TRUE){
   # make data frame with cross sectional estimates
   df_full_est <- data.frame(date = v_dates,
                             r.squared = v_r_squared)
-  
+
   colnames(df_full_est)[1] <- date_var
   df_full_est <- cbind(df_full_est, m_coefs)
 
