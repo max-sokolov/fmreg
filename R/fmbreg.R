@@ -4,7 +4,7 @@
 
 #' Fama-MacBeth regression.
 #'
-#' Estimates Fama-MacBeth regression.
+#' \code{fmbreg} estimates Fama-MacBeth regression.
 #'
 #' @param .data     Data frame with the data
 #' @param y         Name of the dependent variable
@@ -14,9 +14,10 @@
 #' @param date_var  Name of the date variable
 #'                  (should be a colname in .data)
 #' @param intercept Logical/Double: If FALSE, no intercept.
-#'                                  If TRUE, intercept.
-#'                                  If number, the column of this number is included
-#'                                             instead of column of ones.
+#'                                  If TRUE, add intercept.
+#'                                  If intercept = a,
+#'                                  the constant regressor is of form
+#'                                  rep(a, times = N) instead of rep(1L, times = N).
 #'
 #' @return A list: $est      - vector of estimates of the coefficients;
 #'                 $t_stat   - vector of the t-stats for the coefficients;

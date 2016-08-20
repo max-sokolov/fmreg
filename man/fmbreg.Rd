@@ -19,9 +19,10 @@ fmbreg(.data, y, X, date_var, intercept = TRUE)
 (should be a colname in .data)}
 
 \item{intercept}{Logical/Double: If FALSE, no intercept.
-If TRUE, intercept.
-If number, the column of this number is included
-           instead of column of ones.}
+If TRUE, add intercept.
+If intercept = a,
+the constant regressor is of form
+rep(a, times = N) instead of rep(1L, times = N).}
 }
 \value{
 A list: $est      - vector of estimates of the coefficients;
@@ -30,6 +31,6 @@ A list: $est      - vector of estimates of the coefficients;
                             for every period.
 }
 \description{
-Estimates Fama-MacBeth regression.
+\code{fmbreg} estimates Fama-MacBeth regression.
 }
 
