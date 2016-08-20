@@ -4,19 +4,19 @@
 \alias{fmbreg}
 \title{Fama-MacBeth regression.}
 \usage{
-fmbreg(df_data, y, X, date_var, is_const = TRUE)
+fmbreg(.data, y, X, date_var, is_const = TRUE)
 }
 \arguments{
-\item{df_data}{Data frame with the data}
+\item{.data}{Data frame with the data}
 
 \item{y}{Name of the dependent variable
-(should be a colname in df_data)}
+(should be a colname in .data)}
 
 \item{X}{Names of the regressors
-(should be colnames in df_data)}
+(should be colnames in .data)}
 
 \item{date_var}{Name of the date variable
-(should be a colname in df_data)}
+(should be a colname in .data)}
 
 \item{is_const}{Logical: Do we need to include a constant in the regression?}
 }
