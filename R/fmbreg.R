@@ -19,10 +19,9 @@
 #'                                  the constant regressor is of form
 #'                                  rep(a, times = N) instead of rep(1L, times = N).
 #'
-#' @return A list: $est      - vector of estimates of the coefficients;
-#'                 $t_stat   - vector of the t-stats for the coefficients;
-#'                 $cs_estimates - data frame with cross-sectional estimates
-#'                                 for every period.
+#' @return A list: $fmb_estimates - data frame with Fama-MacBeth estimates;
+#'                 $cs_estimates  - data frame with cross-sectional estimates
+#'                                  for every period.
 
 #' @export
 fmbreg <- function(.data, y, X, date_var, intercept = TRUE){
@@ -95,22 +94,23 @@ fmbreg <- function(.data, y, X, date_var, intercept = TRUE){
   # make Fama-MacBeth estimates
   k <- ncol(m_coefs)
   
-  v_est <- rep(NA, times = k)
-  names(v_est) <- colnames(m_coefs)
+  term_names <- colnames(m_coefs)
 
-  v_t_stat <- rep(NA, times = k)
-  names(v_t_stat) <- colnames(m_coefs)
+  df_fmb_est <- list()
 
   for (j in seq(1, k)){
     tmp_y <- m_coefs[, j]
-    tmp_res <- stats::lm(tmp_y ~ 1)
-    tmp_coef <- stats::coef(summary(tmp_res))
-    v_est[j]    <- tmp_coef["(Intercept)", "Estimate"]
-    v_t_stat[j] <- tmp_coef["(Intercept)", "t value"]
+
+    tmp_fit <- stats::lm(tmp_y ~ 1)
+
+    df_tmp <- broom::tidy(tmp_fit)
+
+    df_tmp$term <- term_names[j]
+
+    df_fmb_est <- rbind(df_fmb_est, df_tmp)
   }
 
   # return
-  list(est    = v_est,
-       t_stat = v_t_stat,
-       cs_estimates = df_cs_est)
+  list(fmb_estimates = df_fmb_est,
+       cs_estimates  = df_cs_est)
 }

@@ -25,10 +25,9 @@ the constant regressor is of form
 rep(a, times = N) instead of rep(1L, times = N).}
 }
 \value{
-A list: $est      - vector of estimates of the coefficients;
-                $t_stat   - vector of the t-stats for the coefficients;
-                $cs_estimates - data frame with cross-sectional estimates
-                                for every period.
+A list: $fmb_estimates - data frame with Fama-MacBeth estimates;
+                $cs_estimates  - data frame with cross-sectional estimates
+                                 for every period.
 }
 \description{
 \code{fmbreg} estimates Fama-MacBeth regression.

@@ -8,6 +8,9 @@ context("Main check for fmbreg()")
 f <- fmbreg
 
 data_frame <- dplyr::data_frame
+`%>%`      <- dplyr::`%>%`
+filter     <- dplyr::filter
+select     <- dplyr::select
 
 test_that("f gives right answers in a simple case", {
   n <- 1000L
@@ -20,15 +23,37 @@ test_that("f gives right answers in a simple case", {
                         y    = c(y1, y2),
                         x    = c(x, x))
 
-  res <- f(df_data, y = "y", X = "x", date_var = "date")
+  fmb_fit <- f(df_data, y = "y", X = "x", date_var = "date")
 
-  expect_true(all(c("est", "t_stat", "cs_estimates") %in% names(res)))
+  expect_true(all(c("fmb_estimates", "cs_estimates") %in% names(fmb_fit)))
 
-  expect_true(all.equal(res$est[["x"]],           1, tolerance = 0.1))
-  expect_true(all.equal(res$est[["(Intercept)"]], 0, tolerance = 0.1))
+  # estimates
+  expect_true(all.equal(as.double(
+                        fmb_fit$fmb_estimates %>%
+                          filter(term == "x") %>%
+                          select(estimate)
+                        ),
+                        1,
+                        tolerance = 0.1))
 
-  expect_true(abs(res$t_stat[["x"]]) > 2.0)
-  expect_true(abs(res$t_stat[["(Intercept)"]]) < 2.0)  
+  expect_true(all.equal(as.double(
+                        fmb_fit$fmb_estimates %>%
+                          filter(term == "(Intercept)") %>%
+                          select(estimate)
+                        ),
+                        0,
+                        tolerance = 0.1))
+
+  # t-statistics
+  expect_true(abs(fmb_fit$fmb_estimates %>%
+                    filter(term == "x") %>%
+                    select(statistic)
+                  ) > 2.0)
+
+  expect_true(abs(fmb_fit$fmb_estimates %>%
+                    filter(term == "(Intercept)") %>%
+                    select(statistic)
+                  ) < 2.0)
 })
 
 test_that("f gives right answers in a more complicated,
@@ -58,21 +83,59 @@ test_that("f gives right answers in a more complicated,
     df_data[tmp_ind, "y"] <- tmp_y
   }
 
-  res <- f(df_data, y = "y", X = c("x", "z"), date_var = "date")
+  fmb_fit <- f(df_data, y = "y", X = c("x", "z"), date_var = "date")
 
-  expect_identical(names(res$est),    c("(Intercept)", c("x", "z")))
-  expect_identical(names(res$t_stat), c("(Intercept)", c("x", "z")))
-  expect_identical(colnames(res$cs_estimates), c("date", "r.squared", "(Intercept)", c("x", "z")))
+  expect_identical(colnames(fmb_fit$fmb_estimates),
+                   c("term", "estimate", "std.error", "statistic", "p.value"))
 
-  expect_true(nrow(res$cs_estimates) == T)
+  expect_identical(fmb_fit$fmb_estimates[["term"]],
+                   c("(Intercept)", "x", "z"))
 
-  expect_true(all.equal(res$est[["x"]],           1, tolerance = 0.1))
-  expect_true(all.equal(res$est[["z"]],          -1, tolerance = 0.1))
-  expect_true(all.equal(res$est[["(Intercept)"]], 0, tolerance = 0.1))
+  expect_identical(colnames(fmb_fit$cs_estimates),
+                   c("date", "r.squared", "(Intercept)", "x", "z"))
 
-  expect_true(abs(res$t_stat[["x"]]) > 2.0)
-  expect_true(abs(res$t_stat[["z"]]) > 2.0)
-  expect_true(abs(res$t_stat[["(Intercept)"]]) < 2.0)
+  expect_true(nrow(fmb_fit$cs_estimates) == T)
+
+  # estimates
+  expect_true(all.equal(as.double(
+                        fmb_fit$fmb_estimates %>%
+                          filter(term == "x") %>%
+                          select(estimate)
+                        ),
+                        1,
+                        tolerance = 0.1))
+
+  expect_true(all.equal(as.double(
+                        fmb_fit$fmb_estimates %>%
+                          filter(term == "z") %>%
+                          select(estimate)
+                        ),
+                        -1,
+                        tolerance = 0.1))
+
+  expect_true(all.equal(as.double(
+                        fmb_fit$fmb_estimates %>%
+                          filter(term == "(Intercept)") %>%
+                          select(estimate)
+                        ),
+                        0,
+                        tolerance = 0.1))
+
+  # t-statistics
+  expect_true(abs(fmb_fit$fmb_estimates %>%
+                    filter(term == "x") %>%
+                    select(statistic)
+                  ) > 2.0)
+
+  expect_true(abs(fmb_fit$fmb_estimates %>%
+                    filter(term == "z") %>%
+                    select(statistic)
+                  ) > 2.0)
+
+  expect_true(abs(fmb_fit$fmb_estimates %>%
+                    filter(term == "(Intercept)") %>%
+                    select(statistic)
+                  ) < 2.0)
 })
 
 test_that("f gives a warning if the cross-section is less than 100 obs", {
