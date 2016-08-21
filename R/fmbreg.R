@@ -25,8 +25,11 @@
 
 #' @export
 fmbreg <- function(.data, y, X, date_var, intercept = TRUE){
-  # check arguments
-  stopifnot(AreCharacters(y, X, date_var))
+  # ___________________ check arguments ____________________
+  if (are_characters(y, X, date_var) == FALSE){
+    stop("Arguments y, X, and date_var need to be character vectors.")
+  }
+
   stopifnot(AreInColnames(.data, y, X, date_var))
 
   stopifnot(length(y) == 1)

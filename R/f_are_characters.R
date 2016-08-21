@@ -2,7 +2,7 @@
 # (c) Maxim Sokolov
 ###############################################################################
 
-AreCharacters <- function(...){
+are_characters <- function(...){
   
   l_args <- list(...)
 

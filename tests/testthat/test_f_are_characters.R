@@ -3,9 +3,9 @@
 ###############################################################################
 
 # _____________________________________________________________________________
-context("Main check for AreCharacters()")
+context("Main check for are_characters()")
 
-f <- AreCharacters
+f <- are_characters
 
 test_that("The output has right type and form", {
   arg1 <- "me"

@@ -27,7 +27,7 @@ make_fmb_vars <- function(df_data, vars, date_var, id_var,
                           method = c("winsorize", "trim")[1]){
 
   # check arguments
-  stopifnot(AreCharacters(vars, date_var, id_var, method))
+  stopifnot(are_characters(vars, date_var, id_var, method))
 
   stopifnot(AreInColnames(df_data, vars, date_var, id_var))
 
