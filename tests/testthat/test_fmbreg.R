@@ -22,7 +22,7 @@ test_that("f gives right answers in a simple case", {
 
   res <- f(df_data, y = "y", X = "x", date_var = "date")
 
-  expect_true(all(c("est", "t_stat", "full_est") %in% names(res)))
+  expect_true(all(c("est", "t_stat", "cs_estimates") %in% names(res)))
 
   expect_true(all.equal(res$est[["x"]],           1, tolerance = 0.1))
   expect_true(all.equal(res$est[["(Intercept)"]], 0, tolerance = 0.1))
@@ -62,9 +62,9 @@ test_that("f gives right answers in a more complicated,
 
   expect_identical(names(res$est),    c("(Intercept)", c("x", "z")))
   expect_identical(names(res$t_stat), c("(Intercept)", c("x", "z")))
-  expect_identical(colnames(res$full_est), c("date", "r.squared", "(Intercept)", c("x", "z")))
+  expect_identical(colnames(res$cs_estimates), c("date", "r.squared", "(Intercept)", c("x", "z")))
 
-  expect_true(nrow(res$full_est) == T)
+  expect_true(nrow(res$cs_estimates) == T)
 
   expect_true(all.equal(res$est[["x"]],           1, tolerance = 0.1))
   expect_true(all.equal(res$est[["z"]],          -1, tolerance = 0.1))

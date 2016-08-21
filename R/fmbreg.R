@@ -21,8 +21,8 @@
 #'
 #' @return A list: $est      - vector of estimates of the coefficients;
 #'                 $t_stat   - vector of the t-stats for the coefficients;
-#'                 $full_est - data frame with cross-sectional estimates
-#'                             for every period.
+#'                 $cs_estimates - data frame with cross-sectional estimates
+#'                                 for every period.
 
 #' @export
 fmbreg <- function(.data, y, X, date_var, intercept = TRUE){
@@ -86,11 +86,11 @@ fmbreg <- function(.data, y, X, date_var, intercept = TRUE){
   stopifnot(rownames(m_coefs)  == as.character(v_dates))
 
   # make data frame with cross sectional estimates
-  df_full_est <- data.frame(date = v_dates,
-                            r.squared = v_r_squared)
+  df_cs_est <- data.frame(date = v_dates,
+                          r.squared = v_r_squared)
 
-  colnames(df_full_est)[1] <- date_var
-  df_full_est <- cbind(df_full_est, m_coefs)
+  colnames(df_cs_est)[1] <- date_var
+  df_cs_est <- cbind(df_cs_est, m_coefs)
 
   # make Fama-MacBeth estimates
   k <- ncol(m_coefs)
@@ -112,5 +112,5 @@ fmbreg <- function(.data, y, X, date_var, intercept = TRUE){
   # return
   list(est    = v_est,
        t_stat = v_t_stat,
-       full_est = df_full_est)
+       cs_estimates = df_cs_est)
 }
