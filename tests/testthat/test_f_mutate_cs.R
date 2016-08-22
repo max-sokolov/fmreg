@@ -7,9 +7,6 @@ context("Main check for mutate_cs()")
 
 f <- mutate_cs
 
-winsorize <- portfs::winsorize
-trim      <- portfs::trim
-
 data_frame <- dplyr::data_frame
 
 test_that("f gives right answers in the simplest case", {

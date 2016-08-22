@@ -15,9 +15,9 @@ mutate_cs <- function(.data, vars, date_var, method, cutoffs,
 
   # ________________ choose the method _____________________
   if (method == "winsorize"){
-    f_mutate <- quote(portfs::winsorize)
+    f_mutate <- quote(fmbreg:::winsorize)
   } else if (method == "trim"){
-    f_mutate <- quote(portfs::trim)
+    f_mutate <- quote(fmbreg:::trim)
   } else {
     stop("The `method` argument is illegal")
   }
