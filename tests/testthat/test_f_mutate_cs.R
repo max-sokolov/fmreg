@@ -7,6 +7,14 @@ context("Main check for mutate_cs()")
 
 f <- mutate_cs
 
+winsorize <- function(x, cutoffs){
+  modify_tails(x, cutoffs, method = "winsorize")
+}
+
+trim <- function(x, cutoffs){
+  modify_tails(x, cutoffs, method = "trim")
+}
+
 data_frame <- dplyr::data_frame
 
 test_that("f gives right answers in the simplest case", {

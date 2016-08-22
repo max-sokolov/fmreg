@@ -13,22 +13,14 @@ mutate_cs <- function(.data, vars, date_var, method, cutoffs,
 
   stopifnot(length(vars) == length(out_vars))
 
-  # ________________ choose the method _____________________
-  if (method == "winsorize"){
-    f_mutate <- quote(fmbreg:::winsorize)
-  } else if (method == "trim"){
-    f_mutate <- quote(fmbreg:::trim)
-  } else {
-    stop("The `method` argument is illegal")
-  }
-
+  # _____________________ mutate ___________________________
   # standard evaluation machinery for mutate_
   dots <- list()
   for (i in seq_along(vars)){
-    dots[[ out_vars[i] ]] <- substitute(f_mutate(x, cutoffs = cutoffs),
+    dots[[ out_vars[i] ]] <- substitute(fmbreg:::modify_tails(x, cutoffs = cutoffs, method = method),
                                         env = list(x = as.name(vars[i]),
                                                    cutoffs = cutoffs,
-                                                   f_mutate = f_mutate))
+                                                   method  = method))
   }
 
   df_data_out <- dplyr::group_by_(.data, .dots = list(as.name(date_var)))
