@@ -18,15 +18,20 @@
 #'                                  If intercept = a,
 #'                                  the constant regressor is of form
 #'                                  rep(a, times = N) instead of rep(1L, times = N).
+#' @param winsorize Logical: If TRUE, winsorize the regressors.
+#' @param trim      Logical: If TRUE, trim the regressors.
+#' @param cutoffs   Vector with two numbers between 0 and 1:
+#'                  lower and upper cutoffs for winsorization/trimming.
 #'
 #' @return A list: $fmb_estimates - data frame with Fama-MacBeth estimates;
 #'                 $cs_estimates  - data frame with cross-sectional estimates
 #'                                  for every period.
 
 #' @export
-fmbreg <- function(.data, y, X, date_var, intercept = TRUE){
+fmbreg <- function(.data, y, X, date_var, intercept = TRUE,
+                   winsorize = FALSE, trim = FALSE, cutoffs = c(0.01, 0.99)){
 
-  # ___________________ check arguments ____________________
+  # ____________________________ check arguments ______________________________
   if (are_characters(y, X, date_var) == FALSE){
     stop("Arguments y, X, and date_var need to be character vectors.")
   }
@@ -36,18 +41,44 @@ fmbreg <- function(.data, y, X, date_var, intercept = TRUE){
   }
 
   # small function
-  f_require_length_one <- function(arg_name){
-    if (length(arg_name) != 1){
-      stop(arg_name, "is supposed to be of length 1.")
+  f_require_length <- function(arg_name, len){
+    if (length(arg_name) != len){
+      stop(arg_name, "is supposed to be of length ", len, ".")
     }
   }
 
   # apply the small function
-  f_require_length_one(y)
-  f_require_length_one(date_var)
-  f_require_length_one(intercept)
+  f_require_length(y, 1)
+  f_require_length(date_var, 1)
+  f_require_length(intercept, 1)
+  f_require_length(winsorize, 1)
+  f_require_length(trim, 1)
+  f_require_length(cutoffs, 2)
 
-  # __________________ augment regressors __________________
+  if (all(cutoffs >= 0 & cutoffs <= 1) == FALSE){
+    stop("Cutoffs should be between 0 and 1.")
+  }
+
+  if (cutoffs[1] > cutoffs[2]){
+    stop("cutoffs[1] should be less or equal to cutoffs[2].")
+  }
+
+  # ___________________________ transform variables ___________________________
+  if (winsorize == TRUE){
+    .data <- mutate_cs(.data, vars = X, date_var = date_var,
+                       method = "winsorize", cutoffs = cutoffs)
+  }
+
+  if (trim == TRUE){
+    if (winsorize == TRUE){
+      stop("'winsorize' and 'trim' cannot be applied at the same time.")
+    }
+
+    .data <- mutate_cs(.data, vars = X, date_var = date_var,
+                       method = "trim", cutoffs = cutoffs)
+  }
+
+  # ____________________________ augment regressors ___________________________
   if (intercept == FALSE){
     X_aug <- X
   } else {
@@ -63,11 +94,11 @@ fmbreg <- function(.data, y, X, date_var, intercept = TRUE){
 
   n_regressors <- length(X_aug)
 
-  # __________________ make unique dates ___________________
+  # ____________________________ make unique dates ____________________________
   v_dates <- sort(unique(.data[[date_var]]))
   n_dates <- length(v_dates)
 
-  # _____________ cross-sectional regressions ______________
+  # _______________________ cross-sectional regressions _______________________
 
   R2FromLmFit <- mystats::R2FromLmFit
 
@@ -92,7 +123,7 @@ fmbreg <- function(.data, y, X, date_var, intercept = TRUE){
 
   stopifnot(length(l_cs_est) == n_dates)
 
-  # _______ data frame with cross-sectional estimates ______
+  # ________________ data frame with cross-sectional estimates ________________
   # function to access elements of the list
   f_get_elem <- function(l, elem){
     l[[elem]]
@@ -127,7 +158,7 @@ fmbreg <- function(.data, y, X, date_var, intercept = TRUE){
 
   df_cs_est <- cbind(df_cs_est, m_coefs)
 
-  # ________________ Fama-MacBeth estimates ________________
+  # __________________________ Fama-MacBeth estimates _________________________
   for (j in seq_along(X_aug)){
     tmp_name <- X_aug[j]
 
@@ -146,7 +177,7 @@ fmbreg <- function(.data, y, X, date_var, intercept = TRUE){
     }
   }
 
-  # return
+  # __________________________________ Return _________________________________
   list(fmb_estimates = df_fmb_est,
        cs_estimates  = df_cs_est)
 }
