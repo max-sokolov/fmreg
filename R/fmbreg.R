@@ -30,11 +30,21 @@ fmbreg <- function(.data, y, X, date_var, intercept = TRUE){
     stop("Arguments y, X, and date_var need to be character vectors.")
   }
 
-  stopifnot(AreInColnames(.data, y, X, date_var))
+  if (all(c(y, X, date_var) %in% colnames(.data)) == FALSE){
+    stop("Names in y, X, and date_var need to be names from .data colnames.")
+  }
 
-  stopifnot(length(y) == 1)
-  stopifnot(length(date_var) == 1)
-  stopifnot(length(intercept) == 1)
+  # small function
+  f_require_length_one <- function(arg_name){
+    if (length(arg_name) != 1){
+      stop(arg_name, "is supposed to be of length 1.")
+    }
+  }
+
+  # apply the small function
+  f_require_length_one(y)
+  f_require_length_one(date_var)
+  f_require_length_one(intercept)
 
   # make unique dates
   v_dates <- sort(unique(.data[[date_var]]))
