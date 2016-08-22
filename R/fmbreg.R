@@ -46,49 +46,61 @@ fmbreg <- function(.data, y, X, date_var, intercept = TRUE){
   f_require_length_one(date_var)
   f_require_length_one(intercept)
 
-  # make unique dates
+  # __________________ augment regressors __________________
+  if (intercept == FALSE){
+    X_aug <- X
+  } else {
+    if ("(Intercept)" %in% colnames(.data)){
+      stop("If you want to include intercept in the model,
+            .data should not contain a column named '(Intercept)'.")
+    }
+
+    .data$`(Intercept)` <- as.double(intercept)
+
+    X_aug <- c("(Intercept)", X)
+  }
+
+  k <- length(X_aug)
+
+  # __________________ make unique dates ___________________
   v_dates <- sort(unique(.data[[date_var]]))
   n_dates <- length(v_dates)
 
-  # prepare list for results
-  l_res <- vector(mode = "list", length = n_dates)
-  names(l_res) <- v_dates
+  # _____________ cross-sectional regressions ______________
 
   R2FromLmFit <- mystats::R2FromLmFit
 
-  # estimate the model for each time period
-  for (i in seq(1, n_dates)){
-    df_tmp <- .data[.data[[date_var]] == v_dates[i], ]
+  # function that estimates the model for a cross-section given by the date
+  f_estimate <- function(tmp_date){
+    df_tmp <- .data[.data[[date_var]] == tmp_date, ]
 
     if (nrow(df_tmp) < 100){
-      warning("Date ", v_dates[i], " contains less than 100 observations")
+      warning("Date ", tmp_date, " contains less than 100 observations")
     }
 
-    m_X <- as.matrix(df_tmp[X])
-    if ((intercept != FALSE) && (intercept != 0)){
-      m_X <- cbind(`(Intercept)` = as.double(intercept),
-                   m_X)
-    }
+    m_X <- as.matrix(df_tmp[, X_aug])
 
-    tmp_obj <- stats::lm.fit(x = m_X, y = df_tmp[[y]])
-    
-    l_res[[i]] <- list(coefficients = tmp_obj$coefficients,
-                       r.squared    = R2FromLmFit(tmp_obj))
+    tmp_fit <- stats::lm.fit(x = m_X, y = df_tmp[[y]])
+
+    list(coefficients = tmp_fit$coefficients,
+         r.squared    = R2FromLmFit(tmp_fit))
   }
+
+  l_cs_est <- lapply(v_dates, FUN = f_estimate)
 
   # extract R^2
   v_from_ll <- portfs::v_from_ll
   
-  v_r_squared <- v_from_ll(l_res, key = "r.squared")
+  v_r_squared <- v_from_ll(l_cs_est, key = "r.squared")
 
   # extract coefs
   fGet <- function(l_elem){
     l_elem[["coefficients"]]
   }
 
-  m_coefs <- t(vapply(l_res,
+  m_coefs <- t(vapply(l_cs_est,
                       FUN = fGet,
-                      FUN.VALUE = double(ncol(m_X)))
+                      FUN.VALUE = double(k))
               )
 
   stopifnot(nrow(m_coefs) == n_dates)
@@ -105,8 +117,6 @@ fmbreg <- function(.data, y, X, date_var, intercept = TRUE){
   df_cs_est <- cbind(df_cs_est, m_coefs)
 
   # make Fama-MacBeth estimates
-  k <- ncol(m_coefs)
-  
   term_names <- colnames(m_coefs)
 
   df_fmb_est <- list()
