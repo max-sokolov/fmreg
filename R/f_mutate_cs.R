@@ -14,15 +14,19 @@ mutate_cs <- function(.data, vars, date_var, method, cutoffs,
   stopifnot(length(vars) == length(out_vars))
 
   # _____________________ mutate ___________________________
+  # mutating function
+  f_mutate <- function(x){
+    modify_tails(x, cutoffs = cutoffs, method = method)
+  }
+
   # standard evaluation machinery for mutate_
   dots <- list()
   for (i in seq_along(vars)){
-    dots[[ out_vars[i] ]] <- substitute(fmbreg:::modify_tails(x, cutoffs = cutoffs, method = method),
-                                        env = list(x = as.name(vars[i]),
-                                                   cutoffs = cutoffs,
-                                                   method  = method))
+    dots[[ out_vars[i] ]] <- lazyeval::interp(~ f_mutate(x),
+                                              x = as.name(vars[i]))
   }
 
+  # do mutate for each cross-section separately!
   df_data_out <- dplyr::group_by_(.data, .dots = list(as.name(date_var)))
 
   df_data_out <- dplyr::mutate_(df_data_out, .dots = dots)
