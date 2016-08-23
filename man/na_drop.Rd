@@ -15,4 +15,5 @@ for which NA cases should be deleted.}
 \description{
 \code{na_drop} deletes NA cases in the specified vars from a data frame.
 }
+\keyword{internal}
 

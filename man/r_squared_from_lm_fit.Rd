@@ -17,4 +17,5 @@ r_squared_from_lm_fit(obj, intercept = TRUE, is_adj = FALSE)
 \code{r_squared_from_lm_fit} calculates R^2 (plain or adjusted)
 from the output of \code{lm.fit}.
 }
+\keyword{internal}
 

@@ -13,6 +13,7 @@
 #' @param method  Name of the modification method to be applied to the vector.
 #'                Supports two methods: "winsorize" and "trim".
 
+#' @keywords internal
 modify_tails <- function(x, cutoffs, method = c("winsorize", "trim")[1]){
   stopifnot(length(cutoffs) == 2)
   stopifnot(all(cutoffs >= 0 & cutoffs <= 1))

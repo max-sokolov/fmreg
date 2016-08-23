@@ -11,6 +11,7 @@
 #' @param intercept Logical: does the model contain an intercept?
 #' @param is_adj    Logical: do you need the adjusted R^2?
 
+#' @keywords internal
 r_squared_from_lm_fit <- function(obj, intercept = TRUE, is_adj = FALSE){
   # rank
   p <- obj$rank

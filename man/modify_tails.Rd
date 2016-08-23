@@ -19,4 +19,5 @@ Supports two methods: "winsorize" and "trim".}
 \description{
 \code{modify_tails} modify a vector by winsorizing or trimming the tails.
 }
+\keyword{internal}
 

@@ -10,6 +10,7 @@
 #' @param filter_vars Names of the variables
 #'                    for which NA cases should be deleted.
 
+#' @keywords internal
 na_drop <- function(.data, filter_vars){
 
   stopifnot(is.character(filter_vars))
