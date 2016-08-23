@@ -17,11 +17,14 @@
 #'                                  If TRUE, add intercept.
 #'                                  If intercept = a,
 #'                                  the constant regressor is of form
-#'                                  rep(a, times = N) instead of rep(1L, times = N).
+#'                                  rep(a, times = N) instead of 
+#'                                  rep(1L, times = N).
 #' @param winsorize Logical: If TRUE, winsorize the regressors.
 #' @param trim      Logical: If TRUE, trim the regressors.
 #' @param cutoffs   Vector with two numbers between 0 and 1:
 #'                  lower and upper cutoffs for winsorization/trimming.
+#' @param min_obs   Number: If a cross-section contains less than
+#'                          \code{min_obs} observations, a warning is issued. 
 #'
 #' @return A list: $fmb_estimates - data frame with Fama-MacBeth estimates;
 #'                 $cs_estimates  - data frame with cross-sectional estimates
@@ -29,7 +32,8 @@
 
 #' @export
 fmbreg <- function(.data, y, X, date_var, intercept = TRUE,
-                   winsorize = FALSE, trim = FALSE, cutoffs = c(0.01, 0.99)){
+                   winsorize = FALSE, trim = FALSE, cutoffs = c(0.01, 0.99),
+                   min_obs = 100){
 
   # ____________________________ check arguments ______________________________
   if (are_characters(y, X, date_var) == FALSE){
@@ -109,8 +113,9 @@ fmbreg <- function(.data, y, X, date_var, intercept = TRUE,
   f_estimate <- function(tmp_date){
     df_tmp <- .data[.data[[date_var]] == tmp_date, ]
 
-    if (nrow(df_tmp) < 100){
-      warning("Date ", tmp_date, " contains less than 100 observations")
+    if (nrow(df_tmp) < min_obs){
+      warning("Date ", tmp_date,
+              " contains less than ", min_obs, " observations")
     }
 
     m_X <- as.matrix(df_tmp[, X_aug, drop = FALSE])

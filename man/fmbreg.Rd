@@ -5,7 +5,7 @@
 \title{Fama-MacBeth regression.}
 \usage{
 fmbreg(.data, y, X, date_var, intercept = TRUE, winsorize = FALSE,
-  trim = FALSE, cutoffs = c(0.01, 0.99))
+  trim = FALSE, cutoffs = c(0.01, 0.99), min_obs = 100)
 }
 \arguments{
 \item{.data}{Data frame with the data}
@@ -23,7 +23,8 @@ fmbreg(.data, y, X, date_var, intercept = TRUE, winsorize = FALSE,
 If TRUE, add intercept.
 If intercept = a,
 the constant regressor is of form
-rep(a, times = N) instead of rep(1L, times = N).}
+rep(a, times = N) instead of 
+rep(1L, times = N).}
 
 \item{winsorize}{Logical: If TRUE, winsorize the regressors.}
 
@@ -31,6 +32,9 @@ rep(a, times = N) instead of rep(1L, times = N).}
 
 \item{cutoffs}{Vector with two numbers between 0 and 1:
 lower and upper cutoffs for winsorization/trimming.}
+
+\item{min_obs}{Number: If a cross-section contains less than
+\code{min_obs} observations, a warning is issued.}
 }
 \value{
 A list: $fmb_estimates - data frame with Fama-MacBeth estimates;
