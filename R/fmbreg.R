@@ -78,6 +78,9 @@ fmbreg <- function(.data, y, X, date_var, intercept = TRUE,
                        method = "trim", cutoffs = cutoffs)
   }
 
+  # ________________________________ filter NAs _______________________________
+  .data <- na_drop(.data, filter_vars = c(y, X, date_var))
+
   # ____________________________ augment regressors ___________________________
   if (intercept == FALSE){
     X_aug <- X
