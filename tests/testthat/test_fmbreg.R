@@ -12,7 +12,7 @@ data_frame <- dplyr::data_frame
 filter     <- dplyr::filter
 select     <- dplyr::select
 
-test_that("f gives right answers in a simple case", {
+test_that("f gives right answers in a two-period case", {
   n <- 1000L
   set.seed(123)
   x <- rnorm(n)
@@ -56,8 +56,7 @@ test_that("f gives right answers in a simple case", {
                   ) < 2.0)
 })
 
-test_that("f gives right answers in a more complicated,
-           but still simple case", {
+test_that("f gives right answers in a multiperiod case", {
   n <- 1000L
   T <- 100L
   
@@ -138,8 +137,8 @@ test_that("f gives right answers in a more complicated,
                   ) < 2.0)
 })
 
-test_that("f gives a warning if the cross-section is less than 100 obs", {
-  n <- 99L
+test_that("f gives a warning if the cross-section is less than 'min_obs' obs", {
+  n <- 89L
   set.seed(123)
   x <- rnorm(n)
   y1 <- x + rnorm(n)
@@ -149,5 +148,133 @@ test_that("f gives a warning if the cross-section is less than 100 obs", {
                         y    = c(y1, y2),
                         x    = c(x, x))
 
-  expect_warning(f(df_data, y = "y", X = "x", date_var = "date"))
+  expect_silent(f(df_data, y = "y", X = "x", date_var = "date", min_obs = 89))
+  expect_warning(f(df_data, y = "y", X = "x", date_var = "date", min_obs = 90),
+                 "Date [0-9]+ contains less than [0-9]+ observations")
+})
+
+context("Check winsorize/trim arguments in fmbreg()")
+
+f <- fmbreg
+
+data_frame <- dplyr::data_frame
+
+test_that("f gives right answers when winsorize/trim is TRUE", {
+  n <- 1000L
+  T <- 100L
+  
+  set.seed(123)
+  x <- rnorm(n)
+  z <- rnorm(n)
+
+  v_colnames <- c("date", "y", "x", "z")
+  df_data <- as.data.frame(matrix(NA, nrow = n*T, ncol = length(v_colnames)))
+  colnames(df_data) <- v_colnames
+
+  df_data$x <- rep(x, times = T)
+  df_data$z <- rep(z, times = T)
+
+  for (tmp_t in seq(1, T)){
+    tmp_y <- x * (1  + 0.1*rnorm(n)) + 
+             z * (-1 + 0.1*rnorm(n)) + 
+             3*rnorm(n)
+
+    tmp_ind <- seq((tmp_t-1)*n + 1, tmp_t*n)
+
+    df_data[tmp_ind, "date"] <- tmp_t
+    df_data[tmp_ind, "y"] <- tmp_y
+  }
+
+  cutoffs = c(0.10, 0.90)
+
+  df_data_win <- mutate_cs(df_data, vars = c("x", "z"), date_var = "date",
+                           method = "winsorize", cutoffs = cutoffs)
+
+  df_data_trim <- mutate_cs(df_data, vars = c("x", "z"), date_var = "date",
+                            method = "trim", cutoffs = cutoffs)
+
+  fmb_fit <- f(df_data, y = "y", X = c("x", "z"), date_var = "date")
+
+  # winsorize
+  expect_identical(f(df_data, y = "y", X = c("x", "z"), date_var = "date",
+                     winsorize = TRUE, cutoffs = cutoffs),
+                   f(df_data_win, y = "y", X = c("x", "z"), date_var = "date"))
+
+  # trim
+  expect_identical(f(df_data, y = "y", X = c("x", "z"), date_var = "date",
+                     trim = TRUE, cutoffs = cutoffs),
+                   f(df_data_trim, y = "y", X = c("x", "z"), date_var = "date"))
+
+  # winsorize + trim should give an error
+  expect_error(f(df_data, y = "y", X = c("x", "z"), date_var = "date",
+                 winsorize = TRUE, trim = TRUE),
+                 "'winsorize' and 'trim' cannot be applied at the same time.")
+})
+
+context("Check intercept argument in fmbreg()")
+
+f <- fmbreg
+
+data_frame <- dplyr::data_frame
+`%>%`      <- dplyr::`%>%`
+filter     <- dplyr::filter
+select     <- dplyr::select
+mutate     <- dplyr::mutate
+
+test_that("f gives right answers when intercept is ON", {
+  n <- 1000L
+  T <- 100L
+  
+  set.seed(123)
+  x <- rnorm(n)
+  z <- rnorm(n)
+
+  v_colnames <- c("date", "y", "x", "z")
+  df_data <- as.data.frame(matrix(NA, nrow = n*T, ncol = length(v_colnames)))
+  colnames(df_data) <- v_colnames
+
+  df_data$x     <- rep(x, times = T)
+  df_data$z     <- rep(z, times = T)
+  df_data$const <- rep(1L, times = n*T)
+
+  for (tmp_t in seq(1, T)){
+    tmp_y <- 1 + x * (1  + 0.1*rnorm(n)) +
+                 z * (-1 + 0.1*rnorm(n)) +
+                 3*rnorm(n)
+
+    tmp_ind <- seq((tmp_t-1)*n + 1, tmp_t*n)
+
+    df_data[tmp_ind, "date"] <- tmp_t
+    df_data[tmp_ind, "y"] <- tmp_y
+  }
+
+  fmb_fit           <- f(df_data, y = "y", X = c("x", "z"), date_var = "date")
+
+  fmb_fit_explicit  <- f(df_data, y = "y", X = c("x", "z", "const"), date_var = "date",
+                         intercept = FALSE)
+
+  fmb_fit_intercept <- f(df_data, y = "y", X = c("x", "z"), date_var = "date",
+                         intercept = 0.01)
+
+  # intercept = TRUE and an explicit column with ones: same result
+  expect_equal(fmb_fit$fmb_estimates %>%
+                 filter(term == "(Intercept)") %>%
+                 select(estimate),
+               fmb_fit_explicit$fmb_estimates %>%
+                  filter(term == "const") %>%
+                  select(estimate))
+
+  # If intercept = number, then scaling
+  expect_equal(fmb_fit$fmb_estimates %>%
+                 filter(term == "(Intercept)") %>%
+                 select(estimate),
+               fmb_fit_intercept$fmb_estimates %>%
+                  filter(term == "(Intercept)") %>%
+                  select(estimate) %>%
+                  mutate(estimate = 0.01*estimate))
+
+  # cross-sectional estimates
+  expect_equal(fmb_fit$cs_estimates,
+               fmb_fit_intercept$cs_estimates %>%
+                  mutate(`(Intercept)` = 0.01*`(Intercept)`))
 })
