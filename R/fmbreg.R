@@ -106,9 +106,6 @@ fmbreg <- function(.data, y, X, date_var, intercept = TRUE,
   n_dates <- length(v_dates)
 
   # _______________________ cross-sectional regressions _______________________
-
-  R2FromLmFit <- mystats::R2FromLmFit
-
   # function that estimates the model for a cross-section given by the date
   f_estimate <- function(tmp_date){
     df_tmp <- .data[.data[[date_var]] == tmp_date, ]
@@ -123,7 +120,7 @@ fmbreg <- function(.data, y, X, date_var, intercept = TRUE,
     tmp_fit <- stats::lm.fit(x = m_X, y = df_tmp[[y]])
 
     list(date         = tmp_date,
-         r.squared    = R2FromLmFit(tmp_fit),
+         r.squared    = r_squared_from_lm_fit(tmp_fit),
          coefficients = tmp_fit$coefficients)
   }
 
