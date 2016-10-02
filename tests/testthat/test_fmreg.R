@@ -3,9 +3,9 @@
 ###############################################################################
 
 # _____________________________________________________________________________
-context("Main check for fmbreg()")
+context("Main check for fmreg()")
 
-f <- fmbreg
+f <- fmreg
 
 data_frame <- dplyr::data_frame
 `%>%`      <- dplyr::`%>%`
@@ -23,13 +23,13 @@ test_that("f gives right answers in a two-period case", {
                         y    = c(y1, y2),
                         x    = c(x, x))
 
-  fmb_fit <- f(df_data, y = "y", X = "x", date_var = "date")
+  fm_fit <- f(df_data, y = "y", X = "x", date_var = "date")
 
-  expect_true(all(c("fmb_estimates", "cs_estimates") %in% names(fmb_fit)))
+  expect_true(all(c("fm_estimates", "cs_estimates") %in% names(fm_fit)))
 
   # estimates
   expect_true(all.equal(as.double(
-                        fmb_fit$fmb_estimates %>%
+                        fm_fit$fm_estimates %>%
                           filter(term == "x") %>%
                           select(estimate)
                         ),
@@ -37,7 +37,7 @@ test_that("f gives right answers in a two-period case", {
                         tolerance = 0.1))
 
   expect_true(all.equal(as.double(
-                        fmb_fit$fmb_estimates %>%
+                        fm_fit$fm_estimates %>%
                           filter(term == "(Intercept)") %>%
                           select(estimate)
                         ),
@@ -45,12 +45,12 @@ test_that("f gives right answers in a two-period case", {
                         tolerance = 0.1))
 
   # t-statistics
-  expect_true(abs(fmb_fit$fmb_estimates %>%
+  expect_true(abs(fm_fit$fm_estimates %>%
                     filter(term == "x") %>%
                     select(statistic)
                   ) > 2.0)
 
-  expect_true(abs(fmb_fit$fmb_estimates %>%
+  expect_true(abs(fm_fit$fm_estimates %>%
                     filter(term == "(Intercept)") %>%
                     select(statistic)
                   ) < 2.0)
@@ -82,22 +82,22 @@ test_that("f gives right answers in a multiperiod case", {
     df_data[tmp_ind, "y"] <- tmp_y
   }
 
-  fmb_fit <- f(df_data, y = "y", X = c("x", "z"), date_var = "date")
+  fm_fit <- f(df_data, y = "y", X = c("x", "z"), date_var = "date")
 
-  expect_identical(colnames(fmb_fit$fmb_estimates),
+  expect_identical(colnames(fm_fit$fm_estimates),
                    c("term", "estimate", "std.error", "statistic", "p.value"))
 
-  expect_identical(fmb_fit$fmb_estimates[["term"]],
+  expect_identical(fm_fit$fm_estimates[["term"]],
                    c("(Intercept)", "x", "z"))
 
-  expect_identical(colnames(fmb_fit$cs_estimates),
+  expect_identical(colnames(fm_fit$cs_estimates),
                    c("date", "r.squared", "(Intercept)", "x", "z"))
 
-  expect_true(nrow(fmb_fit$cs_estimates) == T)
+  expect_true(nrow(fm_fit$cs_estimates) == T)
 
   # estimates
   expect_true(all.equal(as.double(
-                        fmb_fit$fmb_estimates %>%
+                        fm_fit$fm_estimates %>%
                           filter(term == "x") %>%
                           select(estimate)
                         ),
@@ -105,7 +105,7 @@ test_that("f gives right answers in a multiperiod case", {
                         tolerance = 0.1))
 
   expect_true(all.equal(as.double(
-                        fmb_fit$fmb_estimates %>%
+                        fm_fit$fm_estimates %>%
                           filter(term == "z") %>%
                           select(estimate)
                         ),
@@ -113,7 +113,7 @@ test_that("f gives right answers in a multiperiod case", {
                         tolerance = 0.1))
 
   expect_true(all.equal(as.double(
-                        fmb_fit$fmb_estimates %>%
+                        fm_fit$fm_estimates %>%
                           filter(term == "(Intercept)") %>%
                           select(estimate)
                         ),
@@ -121,17 +121,17 @@ test_that("f gives right answers in a multiperiod case", {
                         tolerance = 0.1))
 
   # t-statistics
-  expect_true(abs(fmb_fit$fmb_estimates %>%
+  expect_true(abs(fm_fit$fm_estimates %>%
                     filter(term == "x") %>%
                     select(statistic)
                   ) > 2.0)
 
-  expect_true(abs(fmb_fit$fmb_estimates %>%
+  expect_true(abs(fm_fit$fm_estimates %>%
                     filter(term == "z") %>%
                     select(statistic)
                   ) > 2.0)
 
-  expect_true(abs(fmb_fit$fmb_estimates %>%
+  expect_true(abs(fm_fit$fm_estimates %>%
                     filter(term == "(Intercept)") %>%
                     select(statistic)
                   ) < 2.0)
@@ -153,9 +153,9 @@ test_that("f gives a warning if the cross-section is less than 'min_obs' obs", {
                  "Date [0-9]+ contains less than [0-9]+ observations")
 })
 
-context("Check winsorize/trim arguments in fmbreg()")
+context("Check winsorize/trim arguments in fmreg()")
 
-f <- fmbreg
+f <- fmreg
 
 data_frame <- dplyr::data_frame
 
@@ -193,7 +193,7 @@ test_that("f gives right answers when winsorize/trim is TRUE", {
   df_data_trim <- mutate_cs(df_data, vars = c("x", "z"), date_var = "date",
                             method = "trim", cutoffs = cutoffs)
 
-  fmb_fit <- f(df_data, y = "y", X = c("x", "z"), date_var = "date")
+  fm_fit <- f(df_data, y = "y", X = c("x", "z"), date_var = "date")
 
   # winsorize
   expect_identical(f(df_data, y = "y", X = c("x", "z"), date_var = "date",
@@ -211,9 +211,9 @@ test_that("f gives right answers when winsorize/trim is TRUE", {
                  "'winsorize' and 'trim' cannot be applied at the same time.")
 })
 
-context("Check intercept argument in fmbreg()")
+context("Check intercept argument in fmreg()")
 
-f <- fmbreg
+f <- fmreg
 
 data_frame <- dplyr::data_frame
 `%>%`      <- dplyr::`%>%`
@@ -248,33 +248,33 @@ test_that("f gives right answers when intercept is ON", {
     df_data[tmp_ind, "y"] <- tmp_y
   }
 
-  fmb_fit           <- f(df_data, y = "y", X = c("x", "z"), date_var = "date")
+  fm_fit           <- f(df_data, y = "y", X = c("x", "z"), date_var = "date")
 
-  fmb_fit_explicit  <- f(df_data, y = "y", X = c("x", "z", "const"), date_var = "date",
+  fm_fit_explicit  <- f(df_data, y = "y", X = c("x", "z", "const"), date_var = "date",
                          intercept = FALSE)
 
-  fmb_fit_intercept <- f(df_data, y = "y", X = c("x", "z"), date_var = "date",
+  fm_fit_intercept <- f(df_data, y = "y", X = c("x", "z"), date_var = "date",
                          intercept = 0.01)
 
   # intercept = TRUE and an explicit column with ones: same result
-  expect_equal(fmb_fit$fmb_estimates %>%
+  expect_equal(fm_fit$fm_estimates %>%
                  filter(term == "(Intercept)") %>%
                  select(estimate),
-               fmb_fit_explicit$fmb_estimates %>%
+               fm_fit_explicit$fm_estimates %>%
                   filter(term == "const") %>%
                   select(estimate))
 
   # If intercept = number, then scaling
-  expect_equal(fmb_fit$fmb_estimates %>%
+  expect_equal(fm_fit$fm_estimates %>%
                  filter(term == "(Intercept)") %>%
                  select(estimate),
-               fmb_fit_intercept$fmb_estimates %>%
+               fm_fit_intercept$fm_estimates %>%
                   filter(term == "(Intercept)") %>%
                   select(estimate) %>%
                   mutate(estimate = 0.01*estimate))
 
   # cross-sectional estimates
-  expect_equal(fmb_fit$cs_estimates,
-               fmb_fit_intercept$cs_estimates %>%
+  expect_equal(fm_fit$cs_estimates,
+               fm_fit_intercept$cs_estimates %>%
                   mutate(`(Intercept)` = 0.01*`(Intercept)`))
 })

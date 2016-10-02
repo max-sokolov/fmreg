@@ -4,7 +4,7 @@
 
 #' Fama-MacBeth regression.
 #'
-#' \code{fmbreg} estimates Fama-MacBeth regression.
+#' \code{fmreg} estimates Fama-MacBeth regression.
 #'
 #' @param .data     Data frame with the data
 #' @param y         Name of the dependent variable
@@ -26,12 +26,12 @@
 #' @param min_obs   Number: If a cross-section contains less than
 #'                          \code{min_obs} observations, a warning is issued. 
 #'
-#' @return A list: $fmb_estimates - data frame with Fama-MacBeth estimates;
+#' @return A list: $fm_estimates - data frame with Fama-MacBeth estimates;
 #'                 $cs_estimates  - data frame with cross-sectional estimates
 #'                                  for every period.
 
 #' @export
-fmbreg <- function(.data, y, X, date_var, intercept = TRUE,
+fmreg <- function(.data, y, X, date_var, intercept = TRUE,
                    winsorize = FALSE, trim = FALSE, cutoffs = c(0.01, 0.99),
                    min_obs = 100){
 
@@ -176,13 +176,13 @@ fmbreg <- function(.data, y, X, date_var, intercept = TRUE,
     df_tmp$term <- tmp_name
 
     if (j == 1){
-      df_fmb_est <- df_tmp
+      df_fm_est <- df_tmp
     } else {
-      df_fmb_est <- rbind(df_fmb_est, df_tmp)
+      df_fm_est <- rbind(df_fm_est, df_tmp)
     }
   }
 
   # __________________________________ Return _________________________________
-  list(fmb_estimates = df_fmb_est,
+  list(fm_estimates = df_fm_est,
        cs_estimates  = df_cs_est)
 }
