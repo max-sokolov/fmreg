@@ -1,4 +1,4 @@
 library(testthat)
-library(fmbreg)
+library(fmreg)
 
-test_check("fmbreg")
+test_check("fmreg")
