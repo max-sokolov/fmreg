@@ -3,9 +3,9 @@
 ###############################################################################
 
 # _____________________________________________________________________________
-context("Main check for na_drop()")
+context("Main check for drop_na()")
 
-f <- na_drop
+f <- drop_na
 
 data_frame <- dplyr::data_frame
 

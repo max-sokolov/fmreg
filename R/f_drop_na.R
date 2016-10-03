@@ -4,14 +4,14 @@
 
 #' Drop 'NA's.
 #'
-#' \code{na_drop} deletes NA cases in the specified vars from a data frame.
+#' \code{drop_na} deletes NA cases in the specified vars from a data frame.
 #'
 #' @param .data       Data frame with the data.
 #' @param filter_vars Names of the variables
 #'                    for which NA cases should be deleted.
 
 #' @keywords internal
-na_drop <- function(.data, filter_vars){
+drop_na <- function(.data, filter_vars){
 
   stopifnot(is.character(filter_vars))
 
