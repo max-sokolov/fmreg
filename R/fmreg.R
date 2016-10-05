@@ -83,7 +83,7 @@ fmreg <- function(.data, y, X, date_var, intercept = TRUE,
   }
 
   # ________________________________ filter NAs _______________________________
-  .data <- drop_na(.data, filter_vars = c(y, X, date_var))
+  .data <- tidyr::drop_na_(.data, vars = c(y, X, date_var))
 
   # ____________________________ augment regressors ___________________________
   if (intercept == FALSE){
