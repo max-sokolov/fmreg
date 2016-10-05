@@ -46,20 +46,13 @@ fmreg_ <- function(.data, y, X, date_var, intercept = TRUE,
     stop("Names in y, X, and date_var need to be names from .data colnames.")
   }
 
-  # small function
-  f_require_length <- function(arg_name, len){
-    if (length(arg_name) != len){
-      stop(arg_name, "is supposed to be of length ", len, ".")
-    }
-  }
-
-  # apply the small function
-  f_require_length(y, 1)
-  f_require_length(date_var, 1)
-  f_require_length(intercept, 1)
-  f_require_length(winsorize, 1)
-  f_require_length(trim, 1)
-  f_require_length(cutoffs, 2)
+  # check the length of the args
+  require_length(y, 1)
+  require_length(date_var, 1)
+  require_length(intercept, 1)
+  require_length(winsorize, 1)
+  require_length(trim, 1)
+  require_length(cutoffs, 2)
 
   if (all(cutoffs >= 0 & cutoffs <= 1) == FALSE){
     stop("Cutoffs should be between 0 and 1.")
