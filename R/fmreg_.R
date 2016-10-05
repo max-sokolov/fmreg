@@ -24,11 +24,13 @@
 #' @param cutoffs   Vector with two numbers between 0 and 1:
 #'                  lower and upper cutoffs for winsorization/trimming.
 #' @param min_obs   Number: If a cross-section contains less than
-#'                          \code{min_obs} observations, a warning is issued. 
+#'                          \code{min_obs} observations, a warning is issued.
 #'
 #' @return A list: $fm_estimates - data frame with Fama-MacBeth estimates;
 #'                 $cs_estimates  - data frame with cross-sectional estimates
 #'                                  for every period.
+#'
+#' @seealso \code{\link[fmreg]{fmreg}}
 
 #' @export
 fmreg_ <- function(.data, y, X, date_var, intercept = TRUE,
@@ -67,23 +69,9 @@ fmreg_ <- function(.data, y, X, date_var, intercept = TRUE,
     stop("cutoffs[1] should be less or equal to cutoffs[2].")
   }
 
-  # ___________________________ transform variables ___________________________
-  if (winsorize == TRUE){
-    .data <- mutate_cs(.data, vars = X, date_var = date_var,
-                       method = "winsorize", cutoffs = cutoffs)
-  }
-
-  if (trim == TRUE){
-    if (winsorize == TRUE){
-      stop("'winsorize' and 'trim' cannot be applied at the same time.")
-    }
-
-    .data <- mutate_cs(.data, vars = X, date_var = date_var,
-                       method = "trim", cutoffs = cutoffs)
-  }
-
-  # ________________________________ filter NAs _______________________________
-  .data <- tidyr::drop_na_(.data, vars = c(y, X, date_var))
+  # _______________________________ prepare data ______________________________
+  .data <- prepare_data_(.data, y = y, X = X, date_var = date_var,
+                         winsorize = winsorize, trim = trim, cutoffs = cutoffs)
 
   # ____________________________ augment regressors ___________________________
   if (intercept == FALSE){

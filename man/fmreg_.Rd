@@ -44,4 +44,7 @@ A list: $fm_estimates - data frame with Fama-MacBeth estimates;
 \description{
 \code{fmreg_} estimates Fama-MacBeth regression.
 }
+\seealso{
+\code{\link[fmreg]{fmreg}}
+}
 
