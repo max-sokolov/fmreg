@@ -31,7 +31,7 @@ prepare_data_ <- function(.data, y, X, date_var, winsorize, trim, cutoffs){
   }
 
   if (winsorize == TRUE || trim == TRUE){
-    # mutate cross-sections for each time period indipendently
+    # mutate cross-sections for each time period independently
     .data <- mutate_cs(.data, vars = X, date_var = date_var,
                        method = method, cutoffs = cutoffs)
   }

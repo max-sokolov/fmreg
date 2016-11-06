@@ -9,17 +9,17 @@ prepare_data_(.data, y, X, date_var, winsorize, trim, cutoffs)
 \arguments{
 \item{.data}{Data frame with the data}
 
-\item{y}{Name of the dependent variable;}
+\item{y}{Name of the dependent variable}
 
-\item{X}{Names of the regressors;}
+\item{X}{Names of the regressors}
 
-\item{date_var}{Name of the date variable;}
+\item{date_var}{Name of the date variable}
 
-\item{winsorize}{TRUE/FALSE;}
+\item{winsorize}{TRUE/FALSE}
 
-\item{trim}{TRUE/FALSE;}
+\item{trim}{TRUE/FALSE}
 
-\item{cutoffs}{Lower and upper cutoffs for winsorization/trimming.}
+\item{cutoffs}{Lower and upper cutoffs for winsorization/trimming}
 }
 \value{
 data frame with the transformed data.
