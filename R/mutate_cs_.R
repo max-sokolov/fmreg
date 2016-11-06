@@ -16,7 +16,7 @@ mutate_cs_ <- function(.data, vars, date_var, method, cutoffs,
   # _____________________ mutate ___________________________
   # mutating function
   f_mutate <- function(x){
-    modify_tails(x, cutoffs = cutoffs, method = method)
+    modify_tails_(x, cutoffs = cutoffs, method = method)
   }
 
   # standard evaluation machinery for mutate_

@@ -4,7 +4,7 @@
 
 #' Modify tails of a vector.
 #'
-#' \code{modify_tails} modify a vector by winsorizing or trimming the tails.
+#' \code{modify_tails_} modify a vector by winsorizing or trimming the tails.
 #'
 #' @param x       A vector that should be modified.
 #' @param cutoffs A vector with cutoffs.
@@ -14,7 +14,7 @@
 #'                Supports two methods: "winsorize" and "trim".
 
 #' @keywords internal
-modify_tails <- function(x, cutoffs, method = c("winsorize", "trim")[1]){
+modify_tails_ <- function(x, cutoffs, method = c("winsorize", "trim")[1]){
   stopifnot(length(cutoffs) == 2)
   stopifnot(all(cutoffs >= 0 & cutoffs <= 1))
   stopifnot(cutoffs[1] <= cutoffs[2])
@@ -32,7 +32,7 @@ modify_tails <- function(x, cutoffs, method = c("winsorize", "trim")[1]){
     x[x < low] <- NA
     x[x > up]  <- NA
   } else {
-    stop("modify_tails() supports only two methods: 'winsorize' and 'trim'.")
+    stop("modify_tails_() supports only two methods: 'winsorize' and 'trim'.")
   }
 
   x
