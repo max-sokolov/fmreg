@@ -3,9 +3,9 @@
 ###############################################################################
 
 # _____________________________________________________________________________
-context("Main check for require_length()")
+context("Main check for require_length_()")
 
-f <- require_length
+f <- require_length_
 
 test_that("the function works", {
   arg1 <- "me"

@@ -43,12 +43,12 @@ fmreg_ <- function(.data, y, x, date_var, intercept = TRUE,
   }
 
   # check the length of the args
-  require_length(y, 1)
-  require_length(date_var, 1)
-  require_length(intercept, 1)
-  require_length(winsorize, 1)
-  require_length(trim, 1)
-  require_length(cutoffs, 2)
+  require_length_(y, 1)
+  require_length_(date_var, 1)
+  require_length_(intercept, 1)
+  require_length_(winsorize, 1)
+  require_length_(trim, 1)
+  require_length_(cutoffs, 2)
 
   if (all(cutoffs >= 0 & cutoffs <= 1) == FALSE){
     stop("Cutoffs should be between 0 and 1.")
