@@ -19,12 +19,8 @@ fmreg_(.data, y, x, date_var, intercept = TRUE, winsorize = FALSE,
 \item{date_var}{Name of the date variable
 (should be a colname in .data)}
 
-\item{intercept}{Logical/Double: If FALSE, no intercept.
-If TRUE, add intercept.
-If intercept = a,
-the constant regressor is of form
-rep(a, times = N) instead of 
-rep(1L, times = N).}
+\item{intercept}{Logical: If FALSE, no intercept.
+If TRUE, add intercept.}
 
 \item{winsorize}{Logical: If TRUE, winsorize the regressors.}
 

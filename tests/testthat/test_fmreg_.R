@@ -253,9 +253,6 @@ test_that("f gives right answers when intercept is ON", {
   fm_fit_explicit  <- f(df_data, y = "y", x = c("x", "z", "const"), date_var = "date",
                          intercept = FALSE)
 
-  fm_fit_intercept <- f(df_data, y = "y", x = c("x", "z"), date_var = "date",
-                         intercept = 0.01)
-
   # intercept = TRUE and an explicit column with ones: same result
   expect_equal(fm_fit$fm_estimates %>%
                  filter(term == "(Intercept)") %>%
@@ -263,18 +260,4 @@ test_that("f gives right answers when intercept is ON", {
                fm_fit_explicit$fm_estimates %>%
                   filter(term == "const") %>%
                   select(estimate))
-
-  # If intercept = number, then scaling
-  expect_equal(fm_fit$fm_estimates %>%
-                 filter(term == "(Intercept)") %>%
-                 select(estimate),
-               fm_fit_intercept$fm_estimates %>%
-                  filter(term == "(Intercept)") %>%
-                  select(estimate) %>%
-                  mutate(estimate = 0.01*estimate))
-
-  # cross-sectional estimates
-  expect_equal(fm_fit$cs_estimates,
-               fm_fit_intercept$cs_estimates %>%
-                  mutate(`(Intercept)` = 0.01*`(Intercept)`))
 })

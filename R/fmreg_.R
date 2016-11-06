@@ -13,12 +13,8 @@
 #'                  (should be colnames in .data)
 #' @param date_var  Name of the date variable
 #'                  (should be a colname in .data)
-#' @param intercept Logical/Double: If FALSE, no intercept.
-#'                                  If TRUE, add intercept.
-#'                                  If intercept = a,
-#'                                  the constant regressor is of form
-#'                                  rep(a, times = N) instead of 
-#'                                  rep(1L, times = N).
+#' @param intercept Logical: If FALSE, no intercept.
+#'                           If TRUE, add intercept.
 #' @param winsorize Logical: If TRUE, winsorize the regressors.
 #' @param trim      Logical: If TRUE, trim the regressors.
 #' @param cutoffs   Vector with two numbers between 0 and 1:
@@ -75,7 +71,11 @@ fmreg_ <- function(.data, y, x, date_var, intercept = TRUE,
             .data should not contain a column named '(Intercept)'.")
     }
 
-    .data$`(Intercept)` <- as.double(intercept)
+    if (intercept == TRUE){
+      .data$`(Intercept)` <- 1L
+    } else {
+      stop("'intercept' should be TRUE or FALSE")
+    }
 
     x_aug <- c("(Intercept)", x)
   }
