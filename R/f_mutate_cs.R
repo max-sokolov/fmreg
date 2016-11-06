@@ -5,7 +5,7 @@
 mutate_cs <- function(.data, vars, date_var, method, cutoffs,
                       out_vars = vars){
   # _________________ check arguments ______________________
-  stopifnot(are_characters(vars, date_var, method))
+  stopifnot(are_characters_(vars, date_var, method))
 
   stopifnot(all(c(vars, date_var) %in% colnames(.data)))
 

@@ -34,7 +34,7 @@ fmreg_ <- function(.data, y, x, date_var, intercept = TRUE,
                    min_obs = 100){
 
   # ____________________________ check arguments ______________________________
-  if (are_characters(y, x, date_var) == FALSE){
+  if (are_characters_(y, x, date_var) == FALSE){
     stop("Arguments y, X, and date_var need to be character vectors.")
   }
 

@@ -2,8 +2,8 @@
 # (c) Maxim Sokolov
 ###############################################################################
 
-are_characters <- function(...){
-  
+are_characters_ <- function(...){
+
   l_args <- list(...)
 
   if (length(l_args) == 0){

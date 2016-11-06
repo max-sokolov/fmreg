@@ -5,7 +5,7 @@
 # _____________________________________________________________________________
 context("Main check for are_characters()")
 
-f <- are_characters
+f <- are_characters_
 
 test_that("The output has right type and form", {
   arg1 <- "me"
