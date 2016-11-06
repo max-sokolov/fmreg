@@ -3,9 +3,9 @@
 ###############################################################################
 
 # _____________________________________________________________________________
-context("Main check for mutate_cs()")
+context("Main check for mutate_cs_()")
 
-f <- mutate_cs
+f <- mutate_cs_
 
 winsorize <- function(x, cutoffs){
   modify_tails(x, cutoffs, method = "winsorize")

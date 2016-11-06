@@ -51,15 +51,15 @@ test_that("f is doing what it is supposed to do", {
                         stringsAsFactors = FALSE)
 
   # winsorize
-  expect_identical(mutate_cs(df_data, vars = c("x", "z"), date_var = "date",
-                             method = "winsorize", cutoffs = cutoffs),
+  expect_identical(mutate_cs_(df_data, vars = c("x", "z"), date_var = "date",
+                              method = "winsorize", cutoffs = cutoffs),
                    f(df_data, y = "y", x = c("x", "z"), date_var = "date",
                      winsorize = TRUE, trim = FALSE,
                      cutoffs = cutoffs))
 
   # trim
-  expect_identical(drop_na_(mutate_cs(df_data, vars = c("x", "z"), date_var = "date",
-                                      method = "trim", cutoffs = cutoffs),
+  expect_identical(drop_na_(mutate_cs_(df_data, vars = c("x", "z"), date_var = "date",
+                                       method = "trim", cutoffs = cutoffs),
                             vars = c("x", "z")),
                    f(df_data, y = "y", x = c("x", "z"), date_var = "date",
                      winsorize = FALSE, trim = TRUE,

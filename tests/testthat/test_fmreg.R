@@ -187,10 +187,10 @@ test_that("f gives right answers when winsorize/trim is TRUE", {
 
   cutoffs = c(0.10, 0.90)
 
-  df_data_win <- mutate_cs(df_data, vars = c("x", "z"), date_var = "date",
+  df_data_win <- mutate_cs_(df_data, vars = c("x", "z"), date_var = "date",
                            method = "winsorize", cutoffs = cutoffs)
 
-  df_data_trim <- mutate_cs(df_data, vars = c("x", "z"), date_var = "date",
+  df_data_trim <- mutate_cs_(df_data, vars = c("x", "z"), date_var = "date",
                             method = "trim", cutoffs = cutoffs)
 
   fm_fit <- f(df_data, y = "y", X = c("x", "z"), date_var = "date")

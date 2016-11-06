@@ -69,7 +69,7 @@ fmreg <- function(.data, y, X, date_var, intercept = TRUE,
 
   # ___________________________ transform variables ___________________________
   if (winsorize == TRUE){
-    .data <- mutate_cs(.data, vars = X, date_var = date_var,
+    .data <- mutate_cs_(.data, vars = X, date_var = date_var,
                        method = "winsorize", cutoffs = cutoffs)
   }
 
@@ -78,7 +78,7 @@ fmreg <- function(.data, y, X, date_var, intercept = TRUE,
       stop("'winsorize' and 'trim' cannot be applied at the same time.")
     }
 
-    .data <- mutate_cs(.data, vars = X, date_var = date_var,
+    .data <- mutate_cs_(.data, vars = X, date_var = date_var,
                        method = "trim", cutoffs = cutoffs)
   }
 

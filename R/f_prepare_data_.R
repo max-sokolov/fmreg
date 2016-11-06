@@ -32,8 +32,8 @@ prepare_data_ <- function(.data, y, x, date_var, winsorize, trim, cutoffs){
 
   if (winsorize == TRUE || trim == TRUE){
     # mutate cross-sections for each time period independently
-    .data <- mutate_cs(.data, vars = x, date_var = date_var,
-                       method = method, cutoffs = cutoffs)
+    .data <- mutate_cs_(.data, vars = x, date_var = date_var,
+                        method = method, cutoffs = cutoffs)
   }
 
   # ________________________________ filter NAs _______________________________

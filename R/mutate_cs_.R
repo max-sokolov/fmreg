@@ -2,8 +2,8 @@
 # (c) Maxim Sokolov
 ###############################################################################
 
-mutate_cs <- function(.data, vars, date_var, method, cutoffs,
-                      out_vars = vars){
+mutate_cs_ <- function(.data, vars, date_var, method, cutoffs,
+                       out_vars = vars){
   # _________________ check arguments ______________________
   stopifnot(are_characters_(vars, date_var, method))
 
