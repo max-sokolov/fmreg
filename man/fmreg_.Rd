@@ -4,7 +4,7 @@
 \alias{fmreg_}
 \title{Fama-MacBeth regression.}
 \usage{
-fmreg_(.data, y, X, date_var, intercept = TRUE, winsorize = FALSE,
+fmreg_(.data, y, x, date_var, intercept = TRUE, winsorize = FALSE,
   trim = FALSE, cutoffs = c(0.01, 0.99), min_obs = 100)
 }
 \arguments{
@@ -13,7 +13,7 @@ fmreg_(.data, y, X, date_var, intercept = TRUE, winsorize = FALSE,
 \item{y}{Name of the dependent variable
 (should be a colname in .data)}
 
-\item{X}{Names of the regressors
+\item{x}{Names of the regressors
 (should be colnames in .data)}
 
 \item{date_var}{Name of the date variable

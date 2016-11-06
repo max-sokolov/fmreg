@@ -17,7 +17,7 @@ test_that("f returns an initial data frame
                         stringsAsFactors = FALSE)
 
   expect_identical(df_data, f(df_data,
-                              y = "d", X = c("d", "i"), date_var = "c",
+                              y = "d", x = c("d", "i"), date_var = "c",
                               winsorize = FALSE, trim = FALSE,
                               cutoffs = c(0.01, 0.99)))
 })
@@ -32,7 +32,7 @@ test_that("f returns an initial data frame without NAs
 
   expect_identical(dplyr::filter(df_data, is.na(i) == FALSE),
                    f(df_data,
-                     y = "d", X = c("d", "i"), date_var = "c",
+                     y = "d", x = c("d", "i"), date_var = "c",
                      winsorize = FALSE, trim = FALSE,
                      cutoffs = c(0.01, 0.99)))
 })
@@ -53,7 +53,7 @@ test_that("f is doing what it is supposed to do", {
   # winsorize
   expect_identical(mutate_cs(df_data, vars = c("x", "z"), date_var = "date",
                              method = "winsorize", cutoffs = cutoffs),
-                   f(df_data, y = "y", X = c("x", "z"), date_var = "date",
+                   f(df_data, y = "y", x = c("x", "z"), date_var = "date",
                      winsorize = TRUE, trim = FALSE,
                      cutoffs = cutoffs))
 
@@ -61,12 +61,12 @@ test_that("f is doing what it is supposed to do", {
   expect_identical(drop_na_(mutate_cs(df_data, vars = c("x", "z"), date_var = "date",
                                       method = "trim", cutoffs = cutoffs),
                             vars = c("x", "z")),
-                   f(df_data, y = "y", X = c("x", "z"), date_var = "date",
+                   f(df_data, y = "y", x = c("x", "z"), date_var = "date",
                      winsorize = FALSE, trim = TRUE,
                      cutoffs = cutoffs))
 
   # raise an error when both winsorize and trim are ON
-  expect_error(f(df_data, y = "y", X = c("x", "z"), date_var = "date",
+  expect_error(f(df_data, y = "y", x = c("x", "z"), date_var = "date",
                  winsorize = TRUE, trim = TRUE,
                  cutoffs = cutoffs),
                 "'winsorize' and 'trim' cannot be applied at the same time.")

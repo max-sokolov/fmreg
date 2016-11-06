@@ -9,7 +9,7 @@
 #'
 #' @param .data      Data frame with the data
 #' @param y          Name of the dependent variable
-#' @param X          Names of the regressors
+#' @param x          Names of the regressors
 #' @param date_var   Name of the date variable
 #' @param winsorize  TRUE/FALSE
 #' @param trim       TRUE/FALSE
@@ -18,7 +18,7 @@
 #' @return data frame with the transformed data.
 
 #' @keywords internal
-prepare_data_ <- function(.data, y, X, date_var, winsorize, trim, cutoffs){
+prepare_data_ <- function(.data, y, x, date_var, winsorize, trim, cutoffs){
   # _____________________________ winsorize/trim ______________________________
   if (winsorize == TRUE){
     method <- "winsorize"
@@ -32,12 +32,12 @@ prepare_data_ <- function(.data, y, X, date_var, winsorize, trim, cutoffs){
 
   if (winsorize == TRUE || trim == TRUE){
     # mutate cross-sections for each time period independently
-    .data <- mutate_cs(.data, vars = X, date_var = date_var,
+    .data <- mutate_cs(.data, vars = x, date_var = date_var,
                        method = method, cutoffs = cutoffs)
   }
 
   # ________________________________ filter NAs _______________________________
-  .data <- tidyr::drop_na_(.data, vars = c(y, X, date_var))
+  .data <- tidyr::drop_na_(.data, vars = c(y, x, date_var))
 
   # __________________________________ return _________________________________
   .data

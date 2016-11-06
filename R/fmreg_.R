@@ -9,7 +9,7 @@
 #' @param .data     Data frame with the data
 #' @param y         Name of the dependent variable
 #'                  (should be a colname in .data)
-#' @param X         Names of the regressors
+#' @param x         Names of the regressors
 #'                  (should be colnames in .data)
 #' @param date_var  Name of the date variable
 #'                  (should be a colname in .data)
@@ -33,16 +33,16 @@
 #' @seealso \code{\link[fmreg]{fmreg}}
 
 #' @export
-fmreg_ <- function(.data, y, X, date_var, intercept = TRUE,
+fmreg_ <- function(.data, y, x, date_var, intercept = TRUE,
                    winsorize = FALSE, trim = FALSE, cutoffs = c(0.01, 0.99),
                    min_obs = 100){
 
   # ____________________________ check arguments ______________________________
-  if (are_characters(y, X, date_var) == FALSE){
+  if (are_characters(y, x, date_var) == FALSE){
     stop("Arguments y, X, and date_var need to be character vectors.")
   }
 
-  if (all(c(y, X, date_var) %in% colnames(.data)) == FALSE){
+  if (all(c(y, x, date_var) %in% colnames(.data)) == FALSE){
     stop("Names in y, X, and date_var need to be names from .data colnames.")
   }
 
@@ -63,12 +63,12 @@ fmreg_ <- function(.data, y, X, date_var, intercept = TRUE,
   }
 
   # _______________________________ prepare data ______________________________
-  .data <- prepare_data_(.data, y = y, X = X, date_var = date_var,
+  .data <- prepare_data_(.data, y = y, x = x, date_var = date_var,
                          winsorize = winsorize, trim = trim, cutoffs = cutoffs)
 
   # ____________________________ augment regressors ___________________________
   if (intercept == FALSE){
-    X_aug <- X
+    x_aug <- x
   } else {
     if ("(Intercept)" %in% colnames(.data)){
       stop("If you want to include intercept in the model,
@@ -77,10 +77,10 @@ fmreg_ <- function(.data, y, X, date_var, intercept = TRUE,
 
     .data$`(Intercept)` <- as.double(intercept)
 
-    X_aug <- c("(Intercept)", X)
+    x_aug <- c("(Intercept)", x)
   }
 
-  n_regressors <- length(X_aug)
+  n_regressors <- length(x_aug)
 
   # ____________________________ make unique dates ____________________________
   v_dates <- sort(unique(.data[[date_var]]))
@@ -96,7 +96,7 @@ fmreg_ <- function(.data, y, X, date_var, intercept = TRUE,
               " contains less than ", min_obs, " observations")
     }
 
-    m_X <- as.matrix(df_tmp[, X_aug, drop = FALSE])
+    m_X <- as.matrix(df_tmp[, x_aug, drop = FALSE])
 
     tmp_fit <- stats::lm.fit(x = m_X, y = df_tmp[[y]])
 
@@ -140,13 +140,13 @@ fmreg_ <- function(.data, y, X, date_var, intercept = TRUE,
 
   stopifnot(nrow(m_coefs) == n_dates)
   stopifnot(ncol(m_coefs) == n_regressors)
-  stopifnot(all(X_aug %in% colnames(m_coefs)))
+  stopifnot(all(x_aug %in% colnames(m_coefs)))
 
   df_cs_est <- cbind(df_cs_est, m_coefs)
 
   # __________________________ Fama-MacBeth estimates _________________________
-  for (j in seq_along(X_aug)){
-    tmp_name <- X_aug[j]
+  for (j in seq_along(x_aug)){
+    tmp_name <- x_aug[j]
 
     tmp_y <- df_cs_est[, tmp_name, drop = TRUE]
 
