@@ -82,67 +82,9 @@ fmreg_ <- function(.data, y, x, date_var, intercept = TRUE,
 
   n_regressors <- length(x_aug)
 
-  # ____________________________ make unique dates ____________________________
-  v_dates <- sort(unique(.data[[date_var]]))
-  n_dates <- length(v_dates)
-
   # _______________________ cross-sectional regressions _______________________
-  # function that estimates the model for a cross-section given by the date
-  f_estimate <- function(tmp_date){
-    df_tmp <- .data[.data[[date_var]] == tmp_date, ]
-
-    if (nrow(df_tmp) < min_obs){
-      warning("Date ", tmp_date,
-              " contains less than ", min_obs, " observations")
-    }
-
-    m_X <- as.matrix(df_tmp[, x_aug, drop = FALSE])
-
-    tmp_fit <- stats::lm.fit(x = m_X, y = df_tmp[[y]])
-
-    list(date         = tmp_date,
-         r.squared    = r_squared_from_lm_fit(tmp_fit),
-         coefficients = tmp_fit$coefficients)
-  }
-
-  l_cs_est <- lapply(v_dates, FUN = f_estimate)
-
-  stopifnot(length(l_cs_est) == n_dates)
-
-  # ________________ data frame with cross-sectional estimates ________________
-  # function to access elements of the list
-  f_get_elem <- function(l, elem){
-    l[[elem]]
-  }
-
-  # start creating the data frame
-  df_cs_est <- data.frame(date      = vapply(l_cs_est,
-                                             FUN = f_get_elem,
-                                             FUN.VALUE = l_cs_est[[1]]$date,
-                                             elem = "date"),
-                          r.squared = vapply(l_cs_est,
-                                             FUN = f_get_elem,
-                                             FUN.VALUE = double(1),
-                                             elem = "r.squared"))
-
-  # rename the date column
-  names(df_cs_est)[1] <- date_var
-
-  # sanity check
-  stopifnot(nrow(df_cs_est) == n_dates)
-
-  # prepare coefficients for adding to the data frame
-  m_coefs <- t(vapply(l_cs_est,
-                      FUN = f_get_elem,
-                      FUN.VALUE = double(n_regressors),
-                      elem = "coefficients")
-              )
-
-  stopifnot(nrow(m_coefs) == n_dates)
-  stopifnot(ncol(m_coefs) == n_regressors)
-  stopifnot(all(x_aug %in% colnames(m_coefs)))
-
-  df_cs_est <- cbind(df_cs_est, m_coefs)
+  df_cs_est <- do_cs_regressions_(.data, y = y, x = x_aug, date_var = date_var,
+                                  min_obs = min_obs)
 
   # __________________________ Fama-MacBeth estimates _________________________
   for (j in seq_along(x_aug)){
