@@ -23,7 +23,7 @@ test_that("f gives right answers in a two-period case", {
                         y    = c(y1, y2),
                         x    = c(x, x))
 
-  fm_fit <- f(df_data, y = "y", X = "x", date_var = "date")
+  fm_fit <- f(df_data, y = "y", x = "x", date_var = "date")
 
   expect_true(all(c("fm_estimates", "cs_estimates") %in% names(fm_fit)))
 
@@ -82,7 +82,7 @@ test_that("f gives right answers in a multiperiod case", {
     df_data[tmp_ind, "y"] <- tmp_y
   }
 
-  fm_fit <- f(df_data, y = "y", X = c("x", "z"), date_var = "date")
+  fm_fit <- f(df_data, y = "y", x = c("x", "z"), date_var = "date")
 
   expect_identical(colnames(fm_fit$fm_estimates),
                    c("term", "estimate", "std.error", "statistic", "p.value"))
@@ -148,8 +148,8 @@ test_that("f gives a warning if the cross-section is less than 'min_obs' obs", {
                         y    = c(y1, y2),
                         x    = c(x, x))
 
-  expect_silent(f(df_data, y = "y", X = "x", date_var = "date", min_obs = 89))
-  expect_warning(f(df_data, y = "y", X = "x", date_var = "date", min_obs = 90),
+  expect_silent(f(df_data, y = "y", x = "x", date_var = "date", min_obs = 89))
+  expect_warning(f(df_data, y = "y", x = "x", date_var = "date", min_obs = 90),
                  "Date [0-9]+ contains less than [0-9]+ observations")
 })
 
@@ -193,20 +193,20 @@ test_that("f gives right answers when winsorize/trim is TRUE", {
   df_data_trim <- mutate_cs_(df_data, vars = c("x", "z"), date_var = "date",
                             method = "trim", cutoffs = cutoffs)
 
-  fm_fit <- f(df_data, y = "y", X = c("x", "z"), date_var = "date")
+  fm_fit <- f(df_data, y = "y", x = c("x", "z"), date_var = "date")
 
   # winsorize
-  expect_identical(f(df_data, y = "y", X = c("x", "z"), date_var = "date",
+  expect_identical(f(df_data, y = "y", x = c("x", "z"), date_var = "date",
                      winsorize = TRUE, cutoffs = cutoffs),
-                   f(df_data_win, y = "y", X = c("x", "z"), date_var = "date"))
+                   f(df_data_win, y = "y", x = c("x", "z"), date_var = "date"))
 
   # trim
-  expect_identical(f(df_data, y = "y", X = c("x", "z"), date_var = "date",
+  expect_identical(f(df_data, y = "y", x = c("x", "z"), date_var = "date",
                      trim = TRUE, cutoffs = cutoffs),
-                   f(df_data_trim, y = "y", X = c("x", "z"), date_var = "date"))
+                   f(df_data_trim, y = "y", x = c("x", "z"), date_var = "date"))
 
   # winsorize + trim should give an error
-  expect_error(f(df_data, y = "y", X = c("x", "z"), date_var = "date",
+  expect_error(f(df_data, y = "y", x = c("x", "z"), date_var = "date",
                  winsorize = TRUE, trim = TRUE),
                  "'winsorize' and 'trim' cannot be applied at the same time.")
 })
@@ -248,9 +248,9 @@ test_that("f gives right answers when intercept is ON", {
     df_data[tmp_ind, "y"] <- tmp_y
   }
 
-  fm_fit           <- f(df_data, y = "y", X = c("x", "z"), date_var = "date")
+  fm_fit           <- f(df_data, y = "y", x = c("x", "z"), date_var = "date")
 
-  fm_fit_explicit  <- f(df_data, y = "y", X = c("x", "z", "const"), date_var = "date",
+  fm_fit_explicit  <- f(df_data, y = "y", x = c("x", "z", "const"), date_var = "date",
                          intercept = FALSE)
 
   # intercept = TRUE and an explicit column with ones: same result

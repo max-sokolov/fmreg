@@ -9,7 +9,7 @@
 #' @param .data     Data frame with the data
 #' @param y         Name of the dependent variable
 #'                  (should be a colname in .data)
-#' @param X         Names of the regressors
+#' @param x         Names of the regressors
 #'                  (should be colnames in .data)
 #' @param date_var  Name of the date variable
 #'                  (should be a colname in .data)
@@ -31,11 +31,11 @@
 #'                                  for every period.
 
 #' @export
-fmreg <- function(.data, y, X, date_var, intercept = TRUE,
+fmreg <- function(.data, y, x, date_var, intercept = TRUE,
                    winsorize = FALSE, trim = FALSE, cutoffs = c(0.01, 0.99),
                    min_obs = 100){
 
-  fmreg_(.data, y = y, x = X, date_var = date_var, intercept = intercept,
+  fmreg_(.data, y = y, x = x, date_var = date_var, intercept = intercept,
          winsorize = winsorize, trim = trim, cutoffs = cutoffs,
          min_obs = min_obs)
 }
