@@ -45,26 +45,19 @@ fmreg_ <- function(.data, y, x, date_var, intercept = TRUE, min_obs = 100){
   df_cs_est <- do_cs_regressions_(.data, y = y, x = x, date_var = date_var,
                                   intercept = intercept, min_obs = min_obs)
 
-  # __________________________ Fama-MacBeth estimates _________________________
-  for (j in seq_along(x_names_(x, intercept))){
-    tmp_name <- x_names_(x, intercept)[j]
-
-    tmp_y <- df_cs_est[, tmp_name, drop = TRUE]
-
-    tmp_fit <- stats::lm(tmp_y ~ 1)
-
-    df_tmp <- broom::tidy(tmp_fit)
-
-    df_tmp$term <- tmp_name
-
-    if (j == 1){
-      df_fm_est <- df_tmp
-    } else {
-      df_fm_est <- rbind(df_fm_est, df_tmp)
-    }
-  }
+  # _________________________ time series regressions _________________________
+  df_fm_est <- do_ts_regressions_(df_cs_est,
+                                  coef_names = x_names_(x, intercept))
 
   # __________________________________ Return _________________________________
-  list(fm_estimates = df_fm_est,
-       cs_estimates  = df_cs_est)
+  l <- list(fm_estimates = df_fm_est,
+            cs_estimates = df_cs_est,
+            y = y,
+            x = x,
+            date_var = date_var,
+            intercept = intercept)
+
+  class(l) <- "fmreg"
+
+  l
 }
