@@ -41,33 +41,13 @@ fmreg_ <- function(.data, y, x, date_var, intercept = TRUE, min_obs = 100){
   require_length_(date_var, 1)
   require_length_(intercept, 1)
 
-  # ____________________________ augment regressors ___________________________
-  if (intercept == FALSE){
-    x_aug <- x
-  } else {
-    if ("(Intercept)" %in% colnames(.data)){
-      stop("If you want to include intercept in the model,
-            .data should not contain a column named '(Intercept)'.")
-    }
-
-    if (intercept == TRUE){
-      .data$`(Intercept)` <- 1L
-    } else {
-      stop("'intercept' should be TRUE or FALSE")
-    }
-
-    x_aug <- c("(Intercept)", x)
-  }
-
-  n_regressors <- length(x_aug)
-
   # _______________________ cross-sectional regressions _______________________
-  df_cs_est <- do_cs_regressions_(.data, y = y, x = x_aug, date_var = date_var,
-                                  min_obs = min_obs)
+  df_cs_est <- do_cs_regressions_(.data, y = y, x = x, date_var = date_var,
+                                  intercept = intercept, min_obs = min_obs)
 
   # __________________________ Fama-MacBeth estimates _________________________
-  for (j in seq_along(x_aug)){
-    tmp_name <- x_aug[j]
+  for (j in seq_along(x_names_(x, intercept))){
+    tmp_name <- x_names_(x, intercept)[j]
 
     tmp_y <- df_cs_est[, tmp_name, drop = TRUE]
 

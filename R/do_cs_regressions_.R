@@ -2,7 +2,7 @@
 # (c) Maxim Sokolov
 ###############################################################################
 
-do_cs_regressions_ <- function(.data, y, x, date_var, min_obs){
+do_cs_regressions_ <- function(.data, y, x, date_var, intercept, min_obs){
   # unique dates
   v_dates <- sort(unique(.data[[date_var]]))
 
@@ -15,7 +15,7 @@ do_cs_regressions_ <- function(.data, y, x, date_var, min_obs){
               " contains less than ", min_obs, " observations")
     }
 
-    m_x <- as.matrix(df_tmp[, x, drop = FALSE])
+    m_x <- x_matrix_(df_tmp, x = x, intercept = intercept)
 
     tmp_fit <- stats::lm.fit(x = m_x, y = df_tmp[[y]])
 
