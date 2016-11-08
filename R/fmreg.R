@@ -35,7 +35,11 @@ fmreg <- function(.data, y, x, date_var, intercept = TRUE,
                    winsorize = FALSE, trim = FALSE, cutoffs = c(0.01, 0.99),
                    min_obs = 100){
 
+  # _______________________________ prepare data ______________________________
+  .data <- prepare_data_(.data, y = y, x = x, date_var = date_var,
+                         winsorize = winsorize, trim = trim, cutoffs = cutoffs)
+
+  # __________________________ Fama-MacBeth regression ________________________
   fmreg_(.data, y = y, x = x, date_var = date_var, intercept = intercept,
-         winsorize = winsorize, trim = trim, cutoffs = cutoffs,
          min_obs = min_obs)
 }

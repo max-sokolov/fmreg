@@ -15,10 +15,6 @@
 #'                  (should be a colname in .data)
 #' @param intercept Logical: If FALSE, no intercept.
 #'                           If TRUE, add intercept.
-#' @param winsorize Logical: If TRUE, winsorize the regressors.
-#' @param trim      Logical: If TRUE, trim the regressors.
-#' @param cutoffs   Vector with two numbers between 0 and 1:
-#'                  lower and upper cutoffs for winsorization/trimming.
 #' @param min_obs   Number: If a cross-section contains less than
 #'                          \code{min_obs} observations, a warning is issued.
 #'
@@ -29,9 +25,7 @@
 #' @seealso \code{\link[fmreg]{fmreg}}
 
 #' @export
-fmreg_ <- function(.data, y, x, date_var, intercept = TRUE,
-                   winsorize = FALSE, trim = FALSE, cutoffs = c(0.01, 0.99),
-                   min_obs = 100){
+fmreg_ <- function(.data, y, x, date_var, intercept = TRUE, min_obs = 100){
 
   # ____________________________ check arguments ______________________________
   if (are_characters_(y, x, date_var) == FALSE){
@@ -46,21 +40,6 @@ fmreg_ <- function(.data, y, x, date_var, intercept = TRUE,
   require_length_(y, 1)
   require_length_(date_var, 1)
   require_length_(intercept, 1)
-  require_length_(winsorize, 1)
-  require_length_(trim, 1)
-  require_length_(cutoffs, 2)
-
-  if (all(cutoffs >= 0 & cutoffs <= 1) == FALSE){
-    stop("Cutoffs should be between 0 and 1.")
-  }
-
-  if (cutoffs[1] > cutoffs[2]){
-    stop("cutoffs[1] should be less or equal to cutoffs[2].")
-  }
-
-  # _______________________________ prepare data ______________________________
-  .data <- prepare_data_(.data, y = y, x = x, date_var = date_var,
-                         winsorize = winsorize, trim = trim, cutoffs = cutoffs)
 
   # ____________________________ augment regressors ___________________________
   if (intercept == FALSE){

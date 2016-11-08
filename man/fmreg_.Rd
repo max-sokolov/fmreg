@@ -4,8 +4,7 @@
 \alias{fmreg_}
 \title{Fama-MacBeth regression.}
 \usage{
-fmreg_(.data, y, x, date_var, intercept = TRUE, winsorize = FALSE,
-  trim = FALSE, cutoffs = c(0.01, 0.99), min_obs = 100)
+fmreg_(.data, y, x, date_var, intercept = TRUE, min_obs = 100)
 }
 \arguments{
 \item{.data}{Data frame with the data}
@@ -21,13 +20,6 @@ fmreg_(.data, y, x, date_var, intercept = TRUE, winsorize = FALSE,
 
 \item{intercept}{Logical: If FALSE, no intercept.
 If TRUE, add intercept.}
-
-\item{winsorize}{Logical: If TRUE, winsorize the regressors.}
-
-\item{trim}{Logical: If TRUE, trim the regressors.}
-
-\item{cutoffs}{Vector with two numbers between 0 and 1:
-lower and upper cutoffs for winsorization/trimming.}
 
 \item{min_obs}{Number: If a cross-section contains less than
 \code{min_obs} observations, a warning is issued.}

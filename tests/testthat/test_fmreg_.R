@@ -153,64 +153,6 @@ test_that("f gives a warning if the cross-section is less than 'min_obs' obs", {
                  "Date [0-9]+ contains less than [0-9]+ observations")
 })
 
-context("Check winsorize/trim arguments in fmreg_()")
-
-f <- fmreg_
-
-data_frame <- dplyr::data_frame
-
-test_that("f gives right answers when winsorize/trim is TRUE", {
-  n <- 1000L
-  T <- 100L
-  
-  set.seed(123)
-  x <- rnorm(n)
-  z <- rnorm(n)
-
-  v_colnames <- c("date", "y", "x", "z")
-  df_data <- as.data.frame(matrix(NA, nrow = n*T, ncol = length(v_colnames)))
-  colnames(df_data) <- v_colnames
-
-  df_data$x <- rep(x, times = T)
-  df_data$z <- rep(z, times = T)
-
-  for (tmp_t in seq(1, T)){
-    tmp_y <- x * (1  + 0.1*rnorm(n)) + 
-             z * (-1 + 0.1*rnorm(n)) + 
-             3*rnorm(n)
-
-    tmp_ind <- seq((tmp_t-1)*n + 1, tmp_t*n)
-
-    df_data[tmp_ind, "date"] <- tmp_t
-    df_data[tmp_ind, "y"] <- tmp_y
-  }
-
-  cutoffs = c(0.10, 0.90)
-
-  df_data_win <- mutate_cs_(df_data, vars = c("x", "z"), date_var = "date",
-                            method = "winsorize", cutoffs = cutoffs)
-
-  df_data_trim <- mutate_cs_(df_data, vars = c("x", "z"), date_var = "date",
-                             method = "trim", cutoffs = cutoffs)
-
-  fm_fit <- f(df_data, y = "y", x = c("x", "z"), date_var = "date")
-
-  # winsorize
-  expect_identical(f(df_data, y = "y", x = c("x", "z"), date_var = "date",
-                     winsorize = TRUE, cutoffs = cutoffs),
-                   f(df_data_win, y = "y", x = c("x", "z"), date_var = "date"))
-
-  # trim
-  expect_identical(f(df_data, y = "y", x = c("x", "z"), date_var = "date",
-                     trim = TRUE, cutoffs = cutoffs),
-                   f(df_data_trim, y = "y", x = c("x", "z"), date_var = "date"))
-
-  # winsorize + trim should give an error
-  expect_error(f(df_data, y = "y", x = c("x", "z"), date_var = "date",
-                 winsorize = TRUE, trim = TRUE),
-                 "'winsorize' and 'trim' cannot be applied at the same time.")
-})
-
 context("Check intercept argument in fmreg_()")
 
 f <- fmreg_
