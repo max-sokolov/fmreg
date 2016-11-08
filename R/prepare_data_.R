@@ -4,8 +4,8 @@
 
 #' Prepare data for the Fama-MacBeth regression.
 #'
-#' \code{prepare_data_} transforms the data before running
-#' the Fama-MacBeth regression.
+#' \code{prepare_data_} can be used to make common transformations the data
+#' before running the Fama-MacBeth regression.
 #'
 #' @param .data      Data frame with the data
 #' @param y          Name of the dependent variable
@@ -17,8 +17,32 @@
 #'
 #' @return data frame with the transformed data.
 
-#' @keywords internal
+#' @export
 prepare_data_ <- function(.data, y, x, date_var, winsorize, trim, cutoffs){
+  # ____________________________ check arguments ______________________________
+  if (are_characters_(y, x, date_var) == FALSE){
+    stop("Arguments y, X, and date_var need to be character vectors.")
+  }
+
+  if (all(c(y, x, date_var) %in% colnames(.data)) == FALSE){
+    stop("Names in y, X, and date_var need to be names from .data colnames.")
+  }
+
+  # check the length of the args
+  require_length_(y, 1)
+  require_length_(date_var, 1)
+  require_length_(winsorize, 1)
+  require_length_(trim, 1)
+  require_length_(cutoffs, 2)
+
+  if (all(cutoffs >= 0 & cutoffs <= 1) == FALSE){
+    stop("Cutoffs should be between 0 and 1.")
+  }
+
+  if (cutoffs[1] > cutoffs[2]){
+    stop("cutoffs[1] should be less or equal to cutoffs[2].")
+  }
+
   # _____________________________ winsorize/trim ______________________________
   if (winsorize == TRUE){
     method <- "winsorize"

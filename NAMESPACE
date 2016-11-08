@@ -2,3 +2,4 @@
 
 export(fmreg)
 export(fmreg_)
+export(prepare_data_)

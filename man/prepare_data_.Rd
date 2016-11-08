@@ -25,8 +25,7 @@ prepare_data_(.data, y, x, date_var, winsorize, trim, cutoffs)
 data frame with the transformed data.
 }
 \description{
-\code{prepare_data_} transforms the data before running
-the Fama-MacBeth regression.
+\code{prepare_data_} can be used to make common transformations the data
+before running the Fama-MacBeth regression.
 }
-\keyword{internal}
 
