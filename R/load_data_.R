@@ -18,7 +18,7 @@
 #'
 
 #' @import data.table
-#' @export
+#' @keywords internal
 load_data_ <- function(.data, .date, date_var){
   # general checks
   require_length_(.date, 1)

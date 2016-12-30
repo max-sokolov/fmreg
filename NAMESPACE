@@ -2,6 +2,5 @@
 
 export(fmreg)
 export(fmreg_)
-export(load_data_)
 export(prepare_data_)
 import(data.table)
