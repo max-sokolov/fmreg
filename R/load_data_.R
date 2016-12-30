@@ -17,6 +17,7 @@
 #' @return Part (rows) of \code{.data} that corresponds to \code{.date}.
 #'
 
+#' @import data.table
 #' @export
 load_data_ <- function(.data, .date, date_var){
   # general checks
@@ -34,12 +35,12 @@ load_data_ <- function(.data, .date, date_var){
     if (data.table::haskey(.data) && data.table::key(.data)[1] == date_var){
       # .data is already sorted by date_var
 
-      dt_out <- .data[.(.date), ]
+      dt_out <- .data[list(.date), ]
 
     } else if (date_var %in% data.table::indices(.data)){
       # date_var is an index for .data
 
-      dt_out <- .data[.(.date), on = date_var]
+      dt_out <- .data[list(.date), on = date_var]
 
     } else {
       # base case: not any faster than an ordinary data frame
