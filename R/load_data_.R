@@ -54,11 +54,11 @@ load_data_ <- function(.data, .date, date_var){
   } else if (inherits(.data, "tbl_sql")){
     # work with out-of-memory tibble
 
-    templ_df_out <- dplyr::filter(.data,
-                                  lazyeval::interp(~ x == .date,
-                                                   x = as.name(var_name)))
+    templ_df_out <- dplyr::filter_(.data,
+                                   lazyeval::interp(~ x == .date,
+                                                    x = as.name(date_var)))
 
-    df_out <- collect(templ_df_out, n = Inf)
+    df_out <- dplyr::collect(templ_df_out, n = Inf)
 
   } else {
     # base case: data frame
