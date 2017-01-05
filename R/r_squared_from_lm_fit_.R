@@ -1,10 +1,7 @@
-###############################################################################
-# (c) Maxim Sokolov
-###############################################################################
 
 #' R^2 from \code{lm.fit} output.
 #'
-#' \code{r_squared_from_lm_fit} calculates R^2 (plain or adjusted)
+#' \code{r_squared_from_lm_fit_} calculates R^2 (plain or adjusted)
 #' from the output of \code{lm.fit}.
 #'
 #' @param obj       List: output from \code{lm.fit}.
@@ -12,14 +9,14 @@
 #' @param is_adj    Logical: do you need the adjusted R^2?
 
 #' @keywords internal
-r_squared_from_lm_fit <- function(obj, intercept = TRUE, is_adj = FALSE){
+r_squared_from_lm_fit_ <- function(obj, intercept = TRUE, is_adj = FALSE){
   # rank
   p <- obj$rank
   # residual degrees of freedom
   rdf <- obj$df.residual
   
   # get qr object
-  Qr <- qr_lm(obj)
+  Qr <- qr_lm_(obj)
   # number of rows
   n <- NROW(Qr$qr)
 

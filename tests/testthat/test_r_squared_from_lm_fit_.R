@@ -2,7 +2,7 @@
 # (c) Maxim Sokolov
 ###############################################################################
 
-f <- r_squared_from_lm_fit
+f <- r_squared_from_lm_fit_
 
 # _____________________________________________________________________________
 context("Main check for r_squared_from_lm_fit()")
