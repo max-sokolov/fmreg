@@ -2,62 +2,111 @@
 # (c) Maxim Sokolov
 ###############################################################################
 
-#' Fama-MacBeth regression.
+#' Advanced Fama-MacBeth regression.
 #'
-#' \code{fmreg_} estimates Fama-MacBeth regression.
+#' \code{fmreg_} estimates Fama-MacBeth regressions on many specifications
+#' "in parallel".
 #'
-#' @param .data     Data frame with the data
-#' @param y         Name of the dependent variable
-#'                  (should be a colname in .data)
-#' @param x         Names of the regressors
-#'                  (should be colnames in .data)
-#' @param date_var  Name of the date variable
-#'                  (should be a colname in .data)
-#' @param intercept Logical: If FALSE, no intercept.
-#'                           If TRUE, add intercept.
-#' @param min_obs   Number: If a cross-section contains less than
-#'                          \code{min_obs} observations, a warning is issued.
+#' @param .data        "Data frame - like" structure.
+#'                     \code{.data} can be a data frame, a data table,
+#'                     or a tibble, including a "connection" to
+#'                     a out-of-memory database.
 #'
-#' @return A list: $fm_estimates - data frame with Fama-MacBeth estimates;
-#'                 $cs_estimates  - data frame with cross-sectional estimates
-#'                                  for every period.
+#' @param models       A list of models.
+#'                     Each model specifies the model to be estimated.
+#'
+#' @param dates        A vector of dates that are included in the estimation
+#'                     of the regression.
+#'
+#' @param date_var     Name of the date variable
+#'                     (should be a colname in \code{.data}).
+#'
+#' @param load_data    Function of the form function(.data, .date, date_var)
+#'                     that returns a data frame.
+#'                     This function is used to get the "slice" of \code{.data}
+#'                     for \code{.date}.
+#'                     If NULL, the internal function is used.
+#'
+#' @param prepare_data Function of the form function(.data, .date) that returns
+#'                     a data frame.
+#'                     This function modifies the "slice" of data loaded with
+#'                     \code{load_data} before the first stage regression is
+#'                     done on this "slice" of data.
+#'                     If NULL, this step is skipped.
+#'
+#' @param estimate     Function of the form function(model, .data, .date) that
+#'                     returns a list of the first-stage estimates for
+#'                     \code{.date}.
+#'                     This function should produce results that
+#'                     \code{aggregate} will be able to use for
+#'                     the second stage.
+#'                     If NULL, the internal function is used.
+#'
+#' @param aggregate    Function of the form function(model, l_fit) that returns
+#'                     an \code{fmreg} object.
+#'                     This function takes a \code{model} and a list of
+#'                     the first stage estimates for the \code{model} and
+#'                     does the second stage of the Fama-MacBeth regression.
+#'                     If NULL, the internal function is used.
+#'
+#' @param progress     Logical: If TRUE, the progress of the estimation
+#'                     is printed to the standard output.
+#'
+#' @return A list with of \code{fmreg} objects.
+#'         Each object corresponds to the \code{model} from
+#'         the \code{models} argument.
 #'
 #' @seealso \code{\link[fmreg]{fmreg}}
 
 #' @export
-fmreg_ <- function(.data, y, x, date_var, intercept = TRUE, min_obs = 100){
+fmreg_ <- function(.data, models, dates, date_var,
+                   load_data = NULL, prepare_data = NULL,
+                   estimate = NULL, aggregate = NULL,
+                   progress = FALSE){
 
-  # ____________________________ check arguments ______________________________
-  if (are_characters_(y, x, date_var) == FALSE){
-    stop("Arguments y, X, and date_var need to be character vectors.")
+  # if user functions are not provided, use internal functions
+  if (is.null(load_data)){
+    load_data <- load_data_
   }
 
-  if (all(c(y, x, date_var) %in% colnames(.data)) == FALSE){
-    stop("Names in y, X, and date_var need to be names from .data colnames.")
+  if (is.null(estimate)){
+    estimate <- estimate_
   }
 
-  # check the length of the args
-  require_length_(y, 1)
-  require_length_(date_var, 1)
-  require_length_(intercept, 1)
+  if (is.null(aggregate)){
+    aggregate <- aggregate_
+  }
 
-  # _______________________ cross-sectional regressions _______________________
-  df_cs_est <- do_cs_regressions_(.data, y = y, x = x, date_var = date_var,
-                                  intercept = intercept, min_obs = min_obs)
+  # function to run on each date
+  do_for_date <- function(.date, .data){
+    if (progress){
+      cat("\n")
+      cat("Estimation for date: ", .date, "\n")
+    }
 
-  # _________________________ time series regressions _________________________
-  df_fm_est <- do_ts_regressions_(df_cs_est,
-                                  coef_names = x_names_(x, intercept))
+    df_tmp <- load_data(.data, .date = .date, date_var = date_var)
 
-  # __________________________________ Return _________________________________
-  l <- list(fm_estimates = df_fm_est,
-            cs_estimates = df_cs_est,
-            y = y,
-            x = x,
-            date_var = date_var,
-            intercept = intercept)
+    if (is.null(prepare_data) == FALSE){
+      df_tmp <- prepare_data(df_tmp, .date = .date)
+    }
 
-  class(l) <- "fmreg"
+    models_fit  <- lapply(models,
+                          FUN = estimate,
+                          .data = df_tmp,
+                          .date = .date)
 
-  l
+    models_fit
+  }
+
+  # first step of the Fama-MacBeth procedure
+  l_models_fit <- lapply(dates, FUN = do_for_date, .data = .data)
+
+  # just for convenience:
+  # list of dates of list of models -> list of models of list of dates
+  models_l_fit <- purrr::transpose(l_models_fit)
+
+  # second step of the Fama-MacBeth procedure
+  models_fit <- purrr::map2(models, models_l_fit, .f = aggregate)
+
+  models_fit
 }

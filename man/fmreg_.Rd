@@ -2,35 +2,66 @@
 % Please edit documentation in R/fmreg_.R
 \name{fmreg_}
 \alias{fmreg_}
-\title{Fama-MacBeth regression.}
+\title{Advanced Fama-MacBeth regression.}
 \usage{
-fmreg_(.data, y, x, date_var, intercept = TRUE, min_obs = 100)
+fmreg_(.data, models, dates, date_var, load_data = NULL,
+  prepare_data = NULL, estimate = NULL, aggregate = NULL,
+  progress = FALSE)
 }
 \arguments{
-\item{.data}{Data frame with the data}
+\item{.data}{"Data frame - like" structure.
+\code{.data} can be a data frame, a data table,
+or a tibble, including a "connection" to
+a out-of-memory database.}
 
-\item{y}{Name of the dependent variable
-(should be a colname in .data)}
+\item{models}{A list of models.
+Each model specifies the model to be estimated.}
 
-\item{x}{Names of the regressors
-(should be colnames in .data)}
+\item{dates}{A vector of dates that are included in the estimation
+of the regression.}
 
 \item{date_var}{Name of the date variable
-(should be a colname in .data)}
+(should be a colname in \code{.data}).}
 
-\item{intercept}{Logical: If FALSE, no intercept.
-If TRUE, add intercept.}
+\item{load_data}{Function of the form function(.data, .date, date_var)
+that returns a data frame.
+This function is used to get the "slice" of \code{.data}
+for \code{.date}.
+If NULL, the internal function is used.}
 
-\item{min_obs}{Number: If a cross-section contains less than
-\code{min_obs} observations, a warning is issued.}
+\item{prepare_data}{Function of the form function(.data, .date) that returns
+a data frame.
+This function modifies the "slice" of data loaded with
+\code{load_data} before the first stage regression is
+done on this "slice" of data.
+If NULL, this step is skipped.}
+
+\item{estimate}{Function of the form function(model, .data, .date) that
+returns a list of the first-stage estimates for
+\code{.date}.
+This function should produce results that
+\code{aggregate} will be able to use for
+the second stage.
+If NULL, the internal function is used.}
+
+\item{aggregate}{Function of the form function(model, l_fit) that returns
+an \code{fmreg} object.
+This function takes a \code{model} and a list of
+the first stage estimates for the \code{model} and
+does the second stage of the Fama-MacBeth regression.
+If NULL, the internal function is used.}
+
+\item{progress}{Logical: If TRUE, the progress of the estimation
+is printed to the standard output.}
 }
 \value{
-A list: $fm_estimates - data frame with Fama-MacBeth estimates;
-                $cs_estimates  - data frame with cross-sectional estimates
-                                 for every period.
+A list with of \code{fmreg} objects.
+        Each object corresponds to the \code{model} from
+        the \code{models} argument.
 }
 \description{
-\code{fmreg_} estimates Fama-MacBeth regression.
+\code{fmreg_} estimates Fama-MacBeth regressions on many specifications
+"in parallel".
 }
 \seealso{
 \code{\link[fmreg]{fmreg}}
