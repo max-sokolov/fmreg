@@ -63,7 +63,4 @@ A list with of \code{fmreg} objects.
 \code{fmreg_} estimates Fama-MacBeth regressions on many specifications
 "in parallel".
 }
-\seealso{
-\code{\link[fmreg]{fmreg}}
-}
 

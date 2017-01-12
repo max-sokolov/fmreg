@@ -56,7 +56,6 @@
 #'         Each object corresponds to the \code{model} from
 #'         the \code{models} argument.
 #'
-#' @seealso \code{\link[fmreg]{fmreg}}
 
 #' @export
 fmreg_ <- function(.data, models, dates, date_var,
