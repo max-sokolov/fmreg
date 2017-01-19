@@ -1,8 +1,8 @@
 Package: fmreg
 Title: Fama-MacBeth Regression
-Version: 0.0.2.9000
-Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+Version: 0.0.2.9001
+Authors@R: person("Maxim", "Sokolov", email = "maxim.sokolov@simon.rochester.edu", role = c("aut", "cre"))
+Description: Fama-MacBeth regression (development version).
 Depends:
     R (>= 3.3.1)
 License: GPL-3
